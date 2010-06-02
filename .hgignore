@@ -1,7 +1,7 @@
 # use glob syntax.
 syntax: glob
-WebSocketServer/bin/*
-WebSocketServer/obj/*
+Nugget/bin/*
+Nugget/obj/*
 Sample App/ChatClient/bin/*
 Sample App/ChatClient/obj/*
 Sample App/ChatServer/bin/*
@@ -9,5 +9,5 @@ Sample App/ChatServer/obj/*
 glob:Sample App/ChatClient/ChatClient.csproj.user
 glob:Sample App/ChatServer/ChatServer.csproj.user
 glob:Sample App/Sample App.suo
-glob:WebSocketServer.suo
-glob:WebSocketServer/WebSocketServer.csproj.user
+glob:Nugget.suo
+glob:Nugget/Nugget.csproj.user

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WebSocketServer;
+using Nugget;
 
 namespace ChatServer
 {
@@ -11,7 +11,7 @@ namespace ChatServer
         static void Main(string[] args)
         {
             Console.WriteLine("Sample web socket chat app:");
-            Console.WriteLine("Start the client app and navigate to http://localhost:8080/ to start chatting...\n");
+            Console.WriteLine("Open Chrome at http://localhost:8080/ to start chatting...\n");
             var cs = new ChatServer();
         }
     }

@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatClient", "ChatClient\Ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServer", "ChatServer\ChatServer.csproj", "{4B6EC682-8633-437C-85C4-4A7BD409EB89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketServer", "..\WebSocketServer\WebSocketServer.csproj", "{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nugget", "..\Nugget\Nugget.csproj", "{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

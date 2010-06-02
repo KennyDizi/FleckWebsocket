@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 
-namespace WebSocketServer
+namespace Nugget
 {
     public enum ServerLogLevel { Nothing, Subtle, Verbose };
     public delegate void ClientConnectedEventHandler(WebSocketConnection sender, EventArgs e);

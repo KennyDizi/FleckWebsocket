@@ -8,6 +8,6 @@ namespace ChatServer
     class User
     {
         public string Name;
-        public WebSocketServer.WebSocketConnection Connection;
+        public Nugget.WebSocketConnection Connection;
     }
 }

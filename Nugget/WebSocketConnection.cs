@@ -3,7 +3,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.IO;
 
-namespace WebSocketServer
+namespace Nugget
 {
     public class DataReceivedEventArgs
     {

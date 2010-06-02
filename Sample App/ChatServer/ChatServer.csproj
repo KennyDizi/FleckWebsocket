@@ -91,9 +91,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\WebSocketServer\WebSocketServer.csproj">
+    <ProjectReference Include="..\..\Nugget\Nugget.csproj">
       <Project>{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}</Project>
-      <Name>WebSocketServer</Name>
+      <Name>Nugget</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
