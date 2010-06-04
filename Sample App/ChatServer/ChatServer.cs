@@ -12,12 +12,13 @@ namespace ChatServer
         List<User> Users = new List<User>();
         string unknownName = "john doe";
 
+
+
+
         public ChatServer()
         {
-            wss = new WebSocketServer(8181, "http://localhost:8080", "ws://localhost:8181/chat");
-            wss.Logger = Console.Out;
-            wss.LogLevel = ServerLogLevel.Verbose;
-            wss.ClientConnected += new ClientConnectedEventHandler(OnClientConnected);
+            wss = new WebSocketServer(8181, "http://localhost:8080", "ws://localhost:8181", "chat");
+            wss.RegisterSocket<ChatClientSocket>("");
             wss.Start();
             KeepAlive();
         }
@@ -34,15 +35,7 @@ namespace ChatServer
                 r = Console.ReadLine();
             }
         }
-
-        void OnClientConnected(WebSocketConnection sender, EventArgs e)
-        {
-            Users.Add(new User() { Connection = sender });
-            sender.Disconnected += new WebSocketDisconnectedEventHandler(OnClientDisconnected);
-            sender.DataReceived += new DataReceivedEventHandler(OnClientMessage);
-            
-        }
-
+        /*
         void OnClientMessage(WebSocketConnection sender, DataReceivedEventArgs e)
         {
             User user = Users.Single(a => a.Connection == sender);
@@ -66,7 +59,8 @@ namespace ChatServer
             else
             {
                 string name = (user.Name == null) ? unknownName : user.Name;
-                wss.SendToAllExceptOne(name + ": " + e.Data, sender);
+                //wss.SendToAllExceptOne(name + ": " + e.Data, sender);
+                wss.SendToAll(name + ": " + e.Data);
                 sender.Send("me: " + e.Data);
             }
         }
@@ -85,6 +79,6 @@ namespace ChatServer
                 Console.WriteLine("ehm...");
             }
 
-        }
+        }*/
     }
 }
