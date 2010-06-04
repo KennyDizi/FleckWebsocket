@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChatAdminSocket.cs" />
     <Compile Include="ChatClientSocket.cs" />
     <Compile Include="ChatServer.cs" />
     <Compile Include="Program.cs" />

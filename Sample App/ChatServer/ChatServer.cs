@@ -19,6 +19,7 @@ namespace ChatServer
         {
             wss = new WebSocketServer(8181, "http://localhost:8080", "ws://localhost:8181", "chat");
             wss.RegisterSocket<ChatClientSocket>("");
+            wss.RegisterSocket<ChatAdminSocket>("admin");
             wss.Start();
             KeepAlive();
         }
