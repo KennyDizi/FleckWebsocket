@@ -9,7 +9,7 @@ namespace ChatServer
     public class ChatClientSocket : WebSocket
     {
 
-        private string name = "john doe";
+        User me;
         public static int num = 0;
         private int myNum;
 
@@ -23,20 +23,48 @@ namespace ChatServer
         {
             if (data.StartsWith("/nick "))
             {
-                name = data.Replace("/nick ", "");
+                me.Name = data.Replace("/nick ", "");
+                Send("You are now know as " + me.Name);
             }
-
-            Console.WriteLine("chat client "+myNum+" got: " + data);
+            else
+            {
+                foreach (var user in ChatServer.Users)
+                {
+                    if (user.Socket != this)
+                    {
+                        user.Socket.Send(me.Name + ": " + data);
+                    }
+                    else
+                    {
+                        Send("me: " + data);
+                    }
+                }
+            }
         }
 
         public override void Connected()
         {
-            Console.WriteLine("new client conencted: " + myNum);
+            me = new User() { Name = "john doe", Socket = this };
+            ChatServer.Users.Add(me);
+            
+            foreach (var user in ChatServer.Users)
+            {
+                if (user.Socket != this)
+                {
+                    user.Socket.Send(me.Name+" connected");
+                }
+            }
         }
 
         public override void Disconnected()
         {
-            Console.WriteLine("client "+myNum+" has disconnected");
+            foreach (var user in ChatServer.Users)
+            {
+                if (user.Socket != this)
+                {
+                    user.Socket.Send(me.Name + " disconnected");
+                }
+            }
         }
     }
 }

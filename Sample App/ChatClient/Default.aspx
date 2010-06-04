@@ -11,7 +11,7 @@
         // test if the browser supports web sockets
         if ("WebSocket" in window) {
             debug("Browser supports web sockets!", 'success');
-            connect($('#host').val());
+            //connect($('#host').val());
             $('#console_send').removeAttr('disabled');
         } else {
             debug("Browser does not support web sockets", 'error');
@@ -79,7 +79,7 @@
 	.error {color: red;}
 	.success {color: green;}
 	#console_wrapper {background-color: black; color:white;padding:5px;}
-	#console p {padding:0;margin:0;}
+	p {padding:0;margin:0;}
 </style> 
 </head> 
  
@@ -88,11 +88,13 @@
 <h1>Web Socket Chat</h1> 
  
 <div id="server_wrapper"> 
-	<p>Server
+	<p>Connect to /chat or /admin</p>
+    <p>Server
 		<input type="text" name="host" id="host" value="ws://localhost:8181/chat" /> 
-		<input type="submit" name="host_connect" id="host_connect" value="Reconnect!" /> 
+		<input type="submit" name="host_connect" id="host_connect" value="Connect!" /> 
 	</p>
-    <p>Type /nick your_nickname to change your nick</p>
+    <p>Type /nick &lt;name&gt; to change your nick</p>
+    <p>Type /kick &lt;name&gt; to kick a user (if you are connected to /admin)<p>
 </div> 
  
 <div id="console_wrapper"> 

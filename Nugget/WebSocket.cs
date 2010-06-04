@@ -21,7 +21,7 @@ namespace Nugget
         public abstract void Disconnected();
         public abstract void Connected();
 
-
+        #region state obj
         // State object for receiving data from remote device.
         private class StateObject
         {
@@ -38,12 +38,23 @@ namespace Nugget
             public byte EndWrap = 255;
         }
 
+        #endregion
+
         #region receive
 
         private void Read(IAsyncResult ar)
         {
             StateObject state = (StateObject)ar.AsyncState;
-            int sizeOfReceivedData = state.workSocket.EndReceive(ar);
+            int sizeOfReceivedData = 0;
+            try
+            {
+                sizeOfReceivedData = state.workSocket.EndReceive(ar);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("read error");
+            }
+            
             
             if (sizeOfReceivedData > 0)
             {
@@ -129,15 +140,14 @@ namespace Nugget
 
         public void Send(string data)
         {
-            // Convert the string data to byte data using UTF8 encoding.
-            byte[] byteData = Encoding.UTF8.GetBytes(data);
-
             // create a new state object
             StateObject state = new StateObject();
             state.workSocket = Socket;
+           
+            Socket.Send(new byte[] { state.StartWrap });
 
-            // send to initial wrapper byte
-            state.workSocket.Send(new byte[] { state.StartWrap }, 1, 0);
+            // Convert the string data to byte data using UTF8 encoding.
+            byte[] byteData = Encoding.UTF8.GetBytes(data);
 
             // Begin sending the data to the remote device.
             Socket.BeginSend(byteData, 0, byteData.Length, 0,
@@ -153,6 +163,9 @@ namespace Nugget
             {
                 try
                 {
+                    // send to initial wrapper byte
+                    state.workSocket.Send(new byte[] { state.StartWrap }, 1, 0);
+
                     // complete the send
                     state.workSocket.EndSend(ar);
                     // end with a end wrapper byte
@@ -160,6 +173,7 @@ namespace Nugget
                 }
                 catch
                 {
+                    Console.WriteLine("send error");
                     Disconnected();
                 }
             }

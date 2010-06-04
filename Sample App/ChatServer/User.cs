@@ -7,6 +7,7 @@ namespace ChatServer
 {
     class User
     {
-        public string Name;
+        public string Name { get; set; }
+        public ChatClientSocket Socket { set; get; }
     }
 }
