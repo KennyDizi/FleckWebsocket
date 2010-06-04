@@ -13,21 +13,21 @@ namespace Nugget
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
+        private HandshakeHandler Shaker = new HandshakeHandler();
         List<WebSocket> Sockets = new List<WebSocket>();
         public Socket ListenerSocker { get; private set; }
-        public string LocationRoot { get; private set; }
+        
         public string LocationFull { get; private set; }
         public int Port { get; private set; }
 
         public string Origin { get; private set; }
 
 
-        public WebSocketServer(int port, string origin, string location, string path)
+        public WebSocketServer(int port, string origin, string location)
         {
             Port = port;
             Origin = origin;
-            LocationFull = location +'/'+ path;
-            LocationRoot = path;
+            LocationFull = location;
         }
 
         public void RegisterSocket<TSocket>(string path) where TSocket : WebSocket
@@ -53,66 +53,19 @@ namespace Nugget
         private void OnClientConnect(IAsyncResult asyn)
         {
             var clientSocket = ListenerSocker.EndAccept(asyn);
-            var path = ShakeHands(clientSocket);
-            Sockets.Add(SocketFactory.Create(path, clientSocket));
+            var shake = ShakeHands(clientSocket);
+
+            var webSocket = SocketFactory.Create(shake.Fields["path"].Value);
+            Sockets.Add(webSocket);
+            webSocket.Socket = clientSocket;
+            webSocket.Connected();
+            
             ListenForClients();
         }
 
-        private string ShakeHands(Socket conn)
+        private Handshake ShakeHands(Socket conn)
         {
-            string GETPath = null;
-            using (var stream = new NetworkStream(conn))
-            using (var reader = new StreamReader(stream))
-            using (var writer = new StreamWriter(stream))
-            {
-                var pathStripper = new Regex(@"ws:\/\/(\w+:[0-9]+).*"); // cut the path just after the port number
-                var strippedLocation = "";
-                if(pathStripper.IsMatch(LocationFull))
-                {
-                    strippedLocation = pathStripper.Replace(LocationFull, "$1");
-                }
-
-                string[] protocolPatterns = {
-                                                @"GET\s\/" + LocationRoot + @"(.*)\sHTTP\/1\.1", // GET <path> HTTP/1.1
-                                                "Upgrade: WebSocket",
-                                                "Connection: Upgrade",
-                                                "Host: "+ strippedLocation,
-                                                "Origin: "+Origin,
-                                            };
-
-
-                Console.WriteLine("reading handshake");
-                for (int i = 0; i < 5; i++) // five lines of handshake
-                {
-                    var regex = new Regex(protocolPatterns[i]);
-                    var prot = reader.ReadLine();
-                    Console.WriteLine(prot);
-                    if (regex.IsMatch(prot))
-                    {
-                        if (i == 0)
-                        {
-                            GETPath = regex.Replace(prot, "$1"); // get the path the web socket is requesting
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Client-part of the handshake doesn't match");
-                    }
-                }
-
-                writer.WriteLine("HTTP/1.1 101 Web Socket Protocol Handshake");
-                writer.WriteLine("Upgrade: WebSocket");
-                writer.WriteLine("Connection: Upgrade");
-                writer.WriteLine("WebSocket-Origin: " + Origin);
-                writer.WriteLine("WebSocket-Location: " + LocationFull+GETPath);
-                writer.WriteLine("");
-              
-            }
-
-            if(GETPath.Length > 0 && GETPath[0] == '/')
-                GETPath = GETPath.Substring(1); // remove the / from the begining
-
-            return GETPath;
+            return Shaker.Shake(conn, Origin, LocationFull);
         }
 
         public void SendToAll(string data)

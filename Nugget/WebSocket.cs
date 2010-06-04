@@ -6,6 +6,7 @@ using System.Net.Sockets;
 
 namespace Nugget
 {
+
     public abstract class WebSocket
     {
         private Socket _socket;
@@ -14,13 +15,14 @@ namespace Nugget
             get { return _socket; }
             set { _socket = value; Receive(); }
         }
+        public WebSocketProtocolIdentifier Protocol { get; set; }
 
         public abstract void Incomming(string data);
         public abstract void Connected();
 
 
         // State object for receiving data from remote device.
-        public class StateObject
+        private class StateObject
         {
             // Client socket.
             public Socket workSocket = null;
