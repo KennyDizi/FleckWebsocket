@@ -38,14 +38,11 @@ namespace Nugget
         /// </summary>
         /// <param name="path">The path the client was registered at</param>
         /// <returns>The instantiated WebSocketClient</returns>
-        public WebSocket Create(string path, Socket socket)
+        public WebSocket Create(string path)
         {
             if (types.ContainsKey(path))
             {
-                var ws = (WebSocket)container.Resolve(types[path]);
-                ws.Socket = socket;
-                ws.Connected();
-                return ws;
+                return (WebSocket)container.Resolve(types[path]);
             }
             else
             {

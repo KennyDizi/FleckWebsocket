@@ -19,7 +19,7 @@ namespace ChatServer
 
         public override void Incomming(string data)
         {
-            Console.WriteLine("chat controller got: " + data);
+            Console.WriteLine("chat client "+myNum+" got: " + data);
         }
 
         public override void Connected()
