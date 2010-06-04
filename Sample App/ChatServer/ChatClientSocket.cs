@@ -27,7 +27,6 @@ namespace ChatServer
             }
 
             Console.WriteLine("chat client "+myNum+" got: " + data);
-            Send("blag");
         }
 
         public override void Connected()
