@@ -10,17 +10,28 @@ namespace ChatServer
     {
         public override void Incomming(string data)
         {
-            if (data.Contains("/kick"))
+            if (data.StartsWith("/kick "))
             {
+                var name = data.Replace("/kick ", "");
+                var userToKick = ChatServer.Users.SingleOrDefault(x => x.Name == name);
 
+                if (userToKick != null)
+                {
+                    ChatServer.Users.Remove(userToKick);
+                    try
+                    {
+                        userToKick.Socket.Socket.Close();
+                    }
+                    catch (Exception)
+                    {
+                        // blah
+                    }
+                    
+                }
+                    
             }
-
-            base.Incomming(data);
-        }
-
-        public override void Connected()
-        {
-            Console.WriteLine("new admin conencted");
+            else
+                base.Incomming(data);
         }
     }
 }

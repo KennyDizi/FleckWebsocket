@@ -9,8 +9,7 @@ namespace ChatServer
     class ChatServer
     {
         WebSocketServer wss;
-        List<User> Users = new List<User>();
-        string unknownName = "john doe";
+        public static List<User> Users = new List<User>();
 
         public ChatServer()
         {
@@ -33,6 +32,9 @@ namespace ChatServer
                 r = Console.ReadLine();
             }
         }
+
+
+
         /*
         void OnClientMessage(WebSocketConnection sender, DataReceivedEventArgs e)
         {
