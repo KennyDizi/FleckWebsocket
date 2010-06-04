@@ -18,6 +18,7 @@ namespace Nugget
         public WebSocketProtocolIdentifier Protocol { get; set; }
 
         public abstract void Incomming(string data);
+        public abstract void Disconnected();
         public abstract void Connected();
 
 
@@ -32,9 +33,77 @@ namespace Nugget
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
+            public bool readingData = false;
+            public byte StartWrap = 0;
+            public byte EndWrap = 255;
         }
 
         #region receive
+
+        private void Read(IAsyncResult ar)
+        {
+            StateObject state = (StateObject)ar.AsyncState;
+            int sizeOfReceivedData = state.workSocket.EndReceive(ar);
+            
+            if (sizeOfReceivedData > 0)
+            {
+                int start = 0, end = state.buffer.Length - 1;
+
+                // if we are not already reading something, look for the start byte as specified in the protocol
+                if (!state.readingData)
+                {
+                    for (start = 0; start < state.buffer.Length - 1; start++)
+                    {
+                        if (state.buffer[start] == state.StartWrap)
+                        {
+                            state.readingData = true; // we found the begining and can now start reading
+                            start++; // we dont need the start byte. Incrementing the start counter will walk us past it
+                            break;
+                        }
+                    }
+                } // no else here, the value of readingData might have changed
+
+                // if a begining was found in the buffer, or if we are continuing from another buffer
+                if (state.readingData)
+                {
+                    bool endIsInThisBuffer = false;
+                    // look for the end byte in the received data
+                    for (end = start; end < sizeOfReceivedData; end++)
+                    {
+                        byte currentByte = state.buffer[end];
+                        if (state.buffer[end] == state.EndWrap)
+                        {
+                            endIsInThisBuffer = true; // we found the ending byte
+                            break;
+                        }
+                    }
+
+                    // the end is in this buffer, which means that we are done reading
+                    if (endIsInThisBuffer)
+                    {
+                        // we are no longer reading data
+                        state.readingData = false;
+                        // put the data into the string builder
+                        state.sb.Append(Encoding.UTF8.GetString(state.buffer, start, end - start));
+                        // trigger the event
+                        int size = Encoding.UTF8.GetBytes(state.sb.ToString().ToCharArray()).Length;
+                        Incomming(state.sb.ToString());
+                        
+                    }
+                    else // if the end is not in this buffer then put everyting from start to the end of the buffer into the datastring and keep on reading
+                    {
+                        state.sb.Append(Encoding.UTF8.GetString(state.buffer, start, end - start));
+                    }
+                }
+
+                // continue listening for more data
+                Receive();
+            }
+            else // the socket is closed
+            {
+                Disconnected();
+            }
+        }
 
         private void Receive()
         {
@@ -46,7 +115,7 @@ namespace Nugget
 
                 // Begin receiving the data from the remote device.
                 Socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), state);
+                    new AsyncCallback(Read), state);
             }
             catch (Exception e)
             {
@@ -54,71 +123,47 @@ namespace Nugget
             }
         }
 
-        private void ReceiveCallback(IAsyncResult ar)
-        {
-            try
-            {
-                // Retrieve the state object and the client socket 
-                // from the asynchronous state object.
-                StateObject state = (StateObject)ar.AsyncState;
-                Socket client = state.workSocket;
-
-                // Read data from the remote device.
-                int bytesRead = client.EndReceive(ar);
-
-                if (bytesRead > 0)
-                {
-                    // There might be more data, so store the data received so far.
-                    state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
-                    // Get the rest of the data.
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state);
-                }
-                else
-                {
-                    // All the data has arrived;
-                    if (state.sb.Length > 1)
-                    {
-                        Incomming(state.sb.ToString());
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
         #endregion
 
         #region send
 
-        public void Send(String data)
+        public void Send(string data)
         {
-            // Convert the string data to byte data using ASCII encoding.
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
+            // Convert the string data to byte data using UTF8 encoding.
+            byte[] byteData = Encoding.UTF8.GetBytes(data);
+
+            // create a new state object
+            StateObject state = new StateObject();
+            state.workSocket = Socket;
+
+            // send to initial wrapper byte
+            state.workSocket.Send(new byte[] { state.StartWrap }, 1, 0);
 
             // Begin sending the data to the remote device.
             Socket.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), Socket);
+                new AsyncCallback(SendCallback), state);
         }
 
         private void SendCallback(IAsyncResult ar)
         {
-            try
+            // get the state object
+            StateObject state = (StateObject)ar.AsyncState;
+            
+            if (state.workSocket.Connected)
             {
-                // Retrieve the socket from the state object.
-                Socket client = (Socket)ar.AsyncState;
-
-                // Complete sending the data to the remote device.
-                int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
-
+                try
+                {
+                    // complete the send
+                    state.workSocket.EndSend(ar);
+                    // end with a end wrapper byte
+                    state.workSocket.Send(new byte[] { state.EndWrap }, 1, 0);
+                }
+                catch
+                {
+                    Disconnected();
+                }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+
         }
         #endregion
     }

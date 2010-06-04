@@ -6,11 +6,16 @@ using Nugget;
 
 namespace ChatServer
 {
-    class ChatAdminSocket : WebSocket
+    class ChatAdminSocket : ChatClientSocket
     {
         public override void Incomming(string data)
         {
-            Console.WriteLine("chat controller got: " + data);
+            if (data.Contains("/kick"))
+            {
+
+            }
+
+            base.Incomming(data);
         }
 
         public override void Connected()

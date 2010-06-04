@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 namespace Nugget
 {
     public enum ServerLogLevel { Nothing, Subtle, Verbose };
-    public delegate void ClientConnectedEventHandler(WebSocketConnection sender, EventArgs e);
 
     public class WebSocketServer
     {
@@ -17,7 +16,7 @@ namespace Nugget
         List<WebSocket> Sockets = new List<WebSocket>();
         public Socket ListenerSocker { get; private set; }
         
-        public string LocationFull { get; private set; }
+        public string Location { get; private set; }
         public int Port { get; private set; }
 
         public string Origin { get; private set; }
@@ -27,7 +26,7 @@ namespace Nugget
         {
             Port = port;
             Origin = origin;
-            LocationFull = location;
+            Location = location;
         }
 
         public void RegisterSocket<TSocket>(string path) where TSocket : WebSocket
@@ -59,13 +58,14 @@ namespace Nugget
             Sockets.Add(webSocket);
             webSocket.Socket = clientSocket;
             webSocket.Connected();
+            webSocket.Protocol = shake.Protocol;
             
             ListenForClients();
         }
 
         private Handshake ShakeHands(Socket conn)
         {
-            return Shaker.Shake(conn, Origin, LocationFull);
+            return Shaker.Shake(conn, Origin, Location);
         }
 
         public void SendToAll(string data)
