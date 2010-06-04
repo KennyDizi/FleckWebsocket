@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using Microsoft.Practices.Unity;
 
 namespace Nugget
 {
@@ -11,7 +12,8 @@ namespace Nugget
     /// </summary>
     class WebSocketFactory
     {
-        private Dictionary<string, Type> ClientTypes = new Dictionary<string, Type>();
+        private Dictionary<string, Type> types = new Dictionary<string, Type>();
+        private UnityContainer container = new UnityContainer();
 
         /// <summary>
         /// Register a new web socket client
@@ -20,11 +22,10 @@ namespace Nugget
         /// <param name="path">The path that the client should respond to</param>
         public void Register<T>(string path) where T : WebSocket
         {
-            if (!ClientTypes.ContainsKey(path))
+            if (!types.ContainsKey(path))
             {
-                if (path == "")
-                    path = "/";
-                ClientTypes[path] = typeof(T);
+                types[path] = typeof(T);
+                container.RegisterType<T>();
             }
             else
             {
@@ -39,16 +40,12 @@ namespace Nugget
         /// <returns>The instantiated WebSocketClient</returns>
         public WebSocket Create(string path, Socket socket)
         {
-            if (path == "")
-                path = "/";
-            if (ClientTypes.ContainsKey(path))
+            if (types.ContainsKey(path))
             {
-                var ctors = ClientTypes[path].GetConstructors();
-                var ctor = ctors
-                var obj = ctor.Invoke(new object[] { socket });
-                var wsc = (WebSocket)obj;
-                
-                return wsc;
+                var ws = (WebSocket)container.Resolve(types[path]);
+                ws.Socket = socket;
+                ws.Connected();
+                return ws;
             }
             else
             {

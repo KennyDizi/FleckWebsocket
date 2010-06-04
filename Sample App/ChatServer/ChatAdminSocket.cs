@@ -6,17 +6,8 @@ using Nugget;
 
 namespace ChatServer
 {
-    public class ChatClientSocket : WebSocket
+    class ChatAdminSocket : WebSocket
     {
-        public static int num = 0;
-        private int myNum;
-
-        public ChatClientSocket()
-        {
-            num++;
-            myNum = num;
-        }
-
         public override void Incomming(string data)
         {
             Console.WriteLine("chat controller got: " + data);
@@ -24,7 +15,7 @@ namespace ChatServer
 
         public override void Connected()
         {
-            Console.WriteLine("new client conencted: " + myNum);
+            Console.WriteLine("new admin conencted");
         }
     }
 }

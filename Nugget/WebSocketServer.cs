@@ -79,12 +79,14 @@ namespace Nugget
                                                 "Host: "+ strippedLocation,
                                                 "Origin: "+Origin,
                                             };
-                
 
+
+                Console.WriteLine("reading handshake");
                 for (int i = 0; i < 5; i++) // five lines of handshake
                 {
                     var regex = new Regex(protocolPatterns[i]);
                     var prot = reader.ReadLine();
+                    Console.WriteLine(prot);
                     if (regex.IsMatch(prot))
                     {
                         if (i == 0)
@@ -98,14 +100,17 @@ namespace Nugget
                     }
                 }
 
-                // send handshake to the client
                 writer.WriteLine("HTTP/1.1 101 Web Socket Protocol Handshake");
                 writer.WriteLine("Upgrade: WebSocket");
                 writer.WriteLine("Connection: Upgrade");
                 writer.WriteLine("WebSocket-Origin: " + Origin);
-                writer.WriteLine("WebSocket-Location: " + LocationFull+'/'+GETPath);
+                writer.WriteLine("WebSocket-Location: " + LocationFull+GETPath);
                 writer.WriteLine("");
+              
             }
+
+            if(GETPath.Length > 0 && GETPath[0] == '/')
+                GETPath = GETPath.Substring(1); // remove the / from the begining
 
             return GETPath;
         }
