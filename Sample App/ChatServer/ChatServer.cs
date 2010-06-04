@@ -12,9 +12,6 @@ namespace ChatServer
         List<User> Users = new List<User>();
         string unknownName = "john doe";
 
-
-
-
         public ChatServer()
         {
             wss = new WebSocketServer(8181, "http://localhost:8080", "ws://localhost:8181");
