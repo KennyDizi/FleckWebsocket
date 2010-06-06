@@ -13,8 +13,7 @@ namespace Nugget
     {
         Unknown,
         draft_hixie_thewebsocketprotocol_75,
-        //draft_hixie_thewebsocketprotocol_76,
-        //draft_ietf_hybi_thewebsocketprotocol_00,
+        draft_ietf_hybi_thewebsocketprotocol_00, // aka draft-hixie-thewebsocketprotocol-76
     }
 
     /// <summary>
@@ -38,6 +37,11 @@ namespace Nugget
                 @"Host:\s(?<host>[^\n]+)\n" +
                 @"Origin:\s(?<origin>[^\n]+)\n\n$"
             },
+            {
+                WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00,
+                @"^(?<connect>[^\s]+)\s(?<path>[^\s]+)\sHTTP\/1\.1\n" + 
+                @"((?<field_name>[^:\s]+):\s(?<field_value>[^\n]+)\n)+"
+            }
         };
 
         // respose handshakes
@@ -52,28 +56,41 @@ namespace Nugget
                 "WebSocket-Location: {LOCATION}\n"+
                 "\n"
             },
+            {
+                WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00,
+                "HTTP/1.1 101 Web Socket Protocol Handshake\n"+
+                "Upgrade: WebSocket\n"+
+                "Connection: Upgrade\n"+
+                "Sec-WebSocket-Origin: {ORIGIN}\n"+
+                "Sec-WebSocket-Location: {LOCATION}\n"+
+                "{PROVE}"
+            },
         };
 
         /// <summary>
         /// Gets the fields of the handshake
         /// </summary>
-        public GroupCollection Fields { get; private set; }
+        public Dictionary<string,string> Fields { get; private set; }
+        public byte[] Raw { get; private set; }
 
         /// <summary>
         /// Instantiates a new Handshake class
         /// </summary>
         /// <param name="handshake">the handshake received from the client</param>
-        public Handshake(string handshake)
+        public Handshake(byte[] handshakeRaw, int length)
         {
-            handshake = handshake.Replace("\r\n", "\n");
+            Raw = handshakeRaw;
+            var handshake = Encoding.UTF8.GetString(handshakeRaw, 0, length).Replace("\r\n", "\n");
+            Log.Debug("client handshake:\n" + handshake);
+
             foreach (var pattern in ClientPatterns)
             {
                 var regex = new Regex(pattern.Value);
                 var match = regex.Match(handshake);
                 if (match.Success)
                 {
-                    Fields = match.Groups;
                     Protocol = pattern.Key;
+                    SetFields(match.Groups);
                     return;
                 }
             }
@@ -88,6 +105,35 @@ namespace Nugget
         public string GetHostResponse()
         {
             return HostResponses[Protocol];
+        }
+
+        private void SetFields(GroupCollection gc)
+        {
+            switch (Protocol)
+            {
+                case WebSocketProtocolIdentifier.draft_hixie_thewebsocketprotocol_75:
+                    Fields = new Dictionary<string, string>();
+                    Fields.Add("connect", gc["connect"].ToString());
+                    Fields.Add("path", gc["path"].ToString());
+                    Fields.Add("host", gc["host"].ToString());
+                    Fields.Add("origin", gc["origin"].ToString());
+                    break;
+                case WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00:
+                    Fields = new Dictionary<string, string>();
+
+                    for (int i = 0; i < gc["field_name"].Captures.Count; i++)
+                    {
+                        Fields.Add(gc["field_name"].Captures[i].ToString().ToLower(), gc["field_value"].Captures[i].ToString().ToLower());
+                    }
+
+                    Fields.Add("connect", gc["connect"].ToString());
+                    Fields.Add("path", gc["path"].ToString());
+
+                    break;
+                case WebSocketProtocolIdentifier.Unknown:    
+                default:
+                    break;
+            }
         }
 
     }

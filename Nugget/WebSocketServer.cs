@@ -10,7 +10,7 @@ namespace Nugget
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
-        private HandshakeHandler Shaker = new HandshakeHandler();
+        private HandshakeHandler Shaker;
         public Socket ListenerSocker { get; private set; }
         public string Location { get; private set; }
         public int Port { get; private set; }
@@ -27,6 +27,7 @@ namespace Nugget
             Port = port;
             Origin = origin;
             Location = location;
+            Shaker = new HandshakeHandler(origin, location);
         }
 
         /// <summary>
@@ -67,9 +68,9 @@ namespace Nugget
             try
             {
                 // greet the newcommer with a (friendly) handshake
-                var shake = Shaker.Shake(clientSocket, Origin, Location);
+                var shake = Shaker.Shake(clientSocket);
                 // create the object to handle the new connection
-                webSocket = SocketFactory.Create(shake.Fields["path"].Value);
+                webSocket = SocketFactory.Create(shake.Fields["path"]);
                 // tell the newcommer about the context
                 webSocket.Socket = clientSocket;
                 webSocket.Protocol = shake.Protocol;
