@@ -10,14 +10,6 @@ namespace ChatServer
     {
 
         User me;
-        public static int num = 0;
-        private int myNum;
-
-        public ChatClientSocket()
-        {
-            num++;
-            myNum = num;
-        }
 
         public override void Incomming(string data)
         {
