@@ -11,3 +11,4 @@ glob:Sample App/ChatServer/ChatServer.csproj.user
 glob:Sample App/Sample App.suo
 glob:Nugget.suo
 glob:Nugget/Nugget.csproj.user
+glob:Nugget/Microsoft.Practices.Unity.dll
