@@ -7,14 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace Nugget
 {
-    public enum ServerLogLevel { Nothing, Subtle, Verbose };
-
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
         private HandshakeHandler Shaker = new HandshakeHandler();
         public Socket ListenerSocker { get; private set; }
-        
         public string Location { get; private set; }
         public int Port { get; private set; }
         public string Origin { get; private set; }
@@ -37,7 +34,7 @@ namespace Nugget
         /// </summary>
         /// <typeparam name="TSocket">the class to handle the connection, a new object of this class is instantiated for every new connection</typeparam>
         /// <param name="path">the path the class should respond to</param>
-        public void RegisterSocket<TSocket>(string path) where TSocket : WebSocket
+        public void RegisterHandler<TSocket>(string path) where TSocket : WebSocket
         {
             SocketFactory.Register<TSocket>(path);
         }
@@ -49,6 +46,7 @@ namespace Nugget
             IPEndPoint ipLocal = new IPEndPoint(IPAddress.Any, Port);
             ListenerSocker.Bind(ipLocal);
             ListenerSocker.Listen(100);
+            Log.Info("Server stated on " + ListenerSocker.LocalEndPoint);
             ListenForClients();
         }
 
@@ -60,36 +58,39 @@ namespace Nugget
         // a new client is trying to connect
         private void OnClientConnect(IAsyncResult asyn)
         {
+            
             // get the socket
             var clientSocket = ListenerSocker.EndAccept(asyn);
-            // greet the newcommer with a (friendly) handshake
-            var shake = ShakeHands(clientSocket);
-
+            Log.Info("new connection from " + clientSocket.RemoteEndPoint);
+            
             WebSocket webSocket;
             try
             {
+                // greet the newcommer with a (friendly) handshake
+                var shake = Shaker.Shake(clientSocket, Origin, Location);
                 // create the object to handle the new connection
                 webSocket = SocketFactory.Create(shake.Fields["path"].Value);
                 // tell the newcommer about the context
                 webSocket.Socket = clientSocket;
                 webSocket.Protocol = shake.Protocol;
+
+                // workaround to counter a bug that causes the first message sent to the socket to be lost
+                byte[] dummy = new byte[2] { 0, 255 };
+                clientSocket.Send(dummy);
+
                 // tell the client that it is succesfully connected
                 webSocket.Connected();
                 
             }
-            catch
+            catch (Exception e)
             {
                 // log the failed connection attempt
+                Log.Error("Exception thrown from method OnClientConnect:\n" + e.Message);
+                clientSocket.Close();
             }
             
             // listen some more
             ListenForClients();
-        }
-
-        // use the handshake handler to shake hands with the newly connected client
-        private Handshake ShakeHands(Socket conn)
-        {
-            return Shaker.Shake(conn, Origin, Location);
         }
     }
 

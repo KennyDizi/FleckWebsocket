@@ -20,7 +20,7 @@ namespace ChatServer
                     ChatServer.Users.Remove(userToKick);
                     try
                     {
-                        userToKick.Socket.Socket.Close();
+                        userToKick.WebSocket.Socket.Close();
                     }
                     catch (Exception)
                     {

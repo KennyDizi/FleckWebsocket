@@ -29,15 +29,18 @@ namespace Nugget
             {
                 // read the client handshake
                 var handshakeBuilder = new StringBuilder();
+                Log.Debug("reading client handshake");
                 var handshakeLine = "";
                 do
                 {
                     handshakeLine = reader.ReadLine();
                     handshakeBuilder.AppendLine(handshakeLine);
+                    Log.Debug("read: " + handshakeLine);
                 } while (handshakeLine != "");
 
                 // use the Handshake class to identify the protocol, and parse out the relevant information from the handshake
                 handshake = new Handshake(handshakeBuilder.ToString());
+                Log.Debug("protocol identifies as: " + handshake.Protocol);
 
                 // check if the client handshake is valid
                 switch (handshake.Protocol)
@@ -62,8 +65,10 @@ namespace Nugget
                     .Replace("{LOCATION}", location + handshake.Fields["path"].Value);
 
                 // send the handshake, line by line
+                Log.Debug("sending handshake");
                 foreach (var line in response.Split('\n'))
                 {
+                    Log.Debug("send: " + line);
                     writer.WriteLine(line);
                 }
             }
