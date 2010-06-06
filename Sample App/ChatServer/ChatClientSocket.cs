@@ -30,9 +30,9 @@ namespace ChatServer
             {
                 foreach (var user in ChatServer.Users)
                 {
-                    if (user.Socket != this)
+                    if (user.WebSocket != this)
                     {
-                        user.Socket.Send(me.Name + ": " + data);
+                        user.WebSocket.Send(me.Name + ": " + data);
                     }
                     else
                     {
@@ -44,14 +44,14 @@ namespace ChatServer
 
         public override void Connected()
         {
-            me = new User() { Name = "john doe", Socket = this };
+            me = new User() { Name = "john doe", WebSocket = this };
             ChatServer.Users.Add(me);
             
             foreach (var user in ChatServer.Users)
             {
-                if (user.Socket != this)
+                if (user.WebSocket != this)
                 {
-                    user.Socket.Send(me.Name+" connected");
+                    user.WebSocket.Send(me.Name+" connected");
                 }
             }
         }
@@ -60,11 +60,12 @@ namespace ChatServer
         {
             foreach (var user in ChatServer.Users)
             {
-                if (user.Socket != this)
+                if (user.WebSocket != this)
                 {
-                    user.Socket.Send(me.Name + " disconnected");
+                    user.WebSocket.Send(me.Name + " disconnected");
                 }
             }
+            ChatServer.Users.Remove(me);
         }
     }
 }
