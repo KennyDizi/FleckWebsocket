@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 
 namespace Nugget
 {
@@ -58,12 +59,12 @@ namespace Nugget
             },
             {
                 WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00,
-                "HTTP/1.1 101 Web Socket Protocol Handshake\n"+
-                "Upgrade: WebSocket\n"+
-                "Connection: Upgrade\n"+
-                "Sec-WebSocket-Origin: {ORIGIN}\n"+
-                "Sec-WebSocket-Location: {LOCATION}\n"+
-                "{PROVE}"
+                "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"+
+                "Upgrade: WebSocket\r\n"+
+                "Connection: Upgrade\r\n"+
+                "Sec-WebSocket-Origin: {ORIGIN}\r\n"+
+                "Sec-WebSocket-Location: {LOCATION}\r\n"+
+                "\r\n"
             },
         };
 
@@ -117,13 +118,14 @@ namespace Nugget
                     Fields.Add("path", gc["path"].ToString());
                     Fields.Add("host", gc["host"].ToString());
                     Fields.Add("origin", gc["origin"].ToString());
+
                     break;
                 case WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00:
                     Fields = new Dictionary<string, string>();
 
                     for (int i = 0; i < gc["field_name"].Captures.Count; i++)
                     {
-                        Fields.Add(gc["field_name"].Captures[i].ToString().ToLower(), gc["field_value"].Captures[i].ToString().ToLower());
+                        Fields.Add(gc["field_name"].Captures[i].ToString().ToLower(), gc["field_value"].Captures[i].ToString());
                     }
 
                     Fields.Add("connect", gc["connect"].ToString());
