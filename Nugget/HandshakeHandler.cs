@@ -64,7 +64,7 @@ namespace Nugget
                 Log.Debug("protocol identified as: " + handshake.Protocol);
 
                 string response = "";
-                byte[] MD5prove = null;
+                byte[] MD5proof = null;
 
                 // check if the client handshake is valid
                 switch (handshake.Protocol)
@@ -92,7 +92,7 @@ namespace Nugget
                         }
                         else
                         {
-                            // calculate the handshake prove
+                            // calculate the handshake proof
                             // the following code is to conform with the protocol
 
                             var key1 = handshake.Fields["sec-websocket-key1"];
@@ -125,8 +125,8 @@ namespace Nugget
                             Int32 result2 = (Int32)(Int64.Parse(sb2.ToString()) / spaces2);
 
                             // get the last 8 byte of the client handshake
-                            byte[] secret = new byte[8];
-                            Array.Copy(handshake.Raw, size - 8, secret, 0, 8);
+                            byte[] challenge = new byte[8];
+                            Array.Copy(handshake.Raw, size - 8, challenge, 0, 8);
 
                             // convert the results to 32 bit big endian byte arrays
                             byte[] result1bytes = BitConverter.GetBytes(result1);
@@ -138,15 +138,16 @@ namespace Nugget
                             }
 
                             // concat the two integers and the 8 bytes from the client
-                            byte[] prove = new byte[16];
-                            Array.Copy(result1bytes, 0, prove, 0, 4);
-                            Array.Copy(result2bytes, 0, prove, 4, 4);
-                            Array.Copy(secret, 0, prove, 8, 8);
+                            byte[] proof = new byte[16];
+                            Array.Copy(result1bytes, 0, proof, 0, 4);
+                            Array.Copy(result2bytes, 0, proof, 4, 4);
+                            Array.Copy(challenge, 0, proof, 8, 8);
 
                             // compute the md5 hash
                             MD5 md5 = System.Security.Cryptography.MD5.Create();
-                            MD5prove = md5.ComputeHash(prove);
+                            MD5proof = md5.ComputeHash(proof);
 
+                            // put the relevant info into the response (the 
                             response = handshake.GetHostResponse()
                                 .Replace("{ORIGIN}", Origin)
                                 .Replace("{LOCATION}", Location + handshake.Fields["path"]);
@@ -167,7 +168,7 @@ namespace Nugget
                 writer.Flush();
                 if (handshake.Protocol == WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00)
                 {
-                    socket.Send(MD5prove);
+                    socket.Send(MD5proof);
                 }
                  
 
