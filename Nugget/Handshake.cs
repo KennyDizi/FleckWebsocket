@@ -55,7 +55,7 @@ namespace Nugget
                 "Connection: Upgrade\n"+
                 "WebSocket-Origin: {ORIGIN}\n"+
                 "WebSocket-Location: {LOCATION}\n"+
-                "\n"
+                "\r\n"
             },
             {
                 WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00,
@@ -64,6 +64,7 @@ namespace Nugget
                 "Connection: Upgrade\r\n"+
                 "Sec-WebSocket-Origin: {ORIGIN}\r\n"+
                 "Sec-WebSocket-Location: {LOCATION}\r\n"+
+                "Sec-WebSocket-Protocol: {PROTOCOL}\r\n"+
                 "\r\n"
             },
         };

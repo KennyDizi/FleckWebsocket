@@ -151,6 +151,12 @@ namespace Nugget
                             response = handshake.GetHostResponse()
                                 .Replace("{ORIGIN}", Origin)
                                 .Replace("{LOCATION}", Location + handshake.Fields["path"]);
+
+                            // just echo the subprotocol for now. This should be picked up and made avaialbe to the application implementation.
+                            if (handshake.Fields.Keys.Contains("sec-websocket-protocol"))
+                                response = response.Replace("{PROTOCOL}", handshake.Fields["sec-websocket-protocol"]);
+                            else
+                                response = response.Replace("Sec-WebSocket-Protocol: {PROTOCOL}\r\n", "");
                         }
                         break;
                     case WebSocketProtocolIdentifier.Unknown:
