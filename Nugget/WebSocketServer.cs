@@ -59,11 +59,13 @@ namespace Nugget
         // a new client is trying to connect
         private void OnClientConnect(IAsyncResult asyn)
         {
-            
+
+
+
             // get the socket
             var clientSocket = ListenerSocker.EndAccept(asyn);
             Log.Info("new connection from " + clientSocket.RemoteEndPoint);
-            
+
             WebSocket webSocket;
             try
             {
@@ -76,8 +78,8 @@ namespace Nugget
                 webSocket.Protocol = shake.Protocol;
 
                 // tell the client that it is succesfully connected
+                webSocket.Receive();
                 webSocket.Connected();
-                
             }
             catch (Exception e)
             {
@@ -85,7 +87,6 @@ namespace Nugget
                 Log.Error("Exception thrown from method OnClientConnect:\n" + e.Message);
                 clientSocket.Close();
             }
-            
             // listen some more
             ListenForClients();
         }

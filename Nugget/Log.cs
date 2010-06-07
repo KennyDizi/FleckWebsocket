@@ -13,6 +13,7 @@ namespace Nugget
         Info,
         Debug,
         Waring,
+        None,
     }
 
     public class Log
