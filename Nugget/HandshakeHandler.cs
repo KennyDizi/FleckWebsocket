@@ -49,7 +49,6 @@ namespace Nugget
             Handshake handshake = null;
 
             using (var stream = new NetworkStream(socket))
-            using (var reader = new StreamReader(stream))
             using (var writer = new StreamWriter(stream))
             {
                 // read the client handshake
@@ -99,10 +98,12 @@ namespace Nugget
                             var key1 = handshake.Fields["sec-websocket-key1"];
                             var key2 = handshake.Fields["sec-websocket-key2"];
 
+                            // concat all digits and count the spaces
                             var sb1 = new StringBuilder();
                             var sb2 = new StringBuilder();
                             int spaces1 = 0;
                             int spaces2 = 0;
+                            
                             for (int i = 0; i < key1.Length; i++)
                             {
                                 if (Char.IsDigit(key1[i]))
@@ -119,12 +120,15 @@ namespace Nugget
                                     spaces2++;
                             }
 
+                            // divide the digits with the number of spaces
                             Int32 result1 = (Int32)(Int64.Parse(sb1.ToString()) / spaces1);
                             Int32 result2 = (Int32)(Int64.Parse(sb2.ToString()) / spaces2);
 
+                            // get the last 8 byte of the client handshake
                             byte[] secret = new byte[8];
-                            Array.Copy(handshake.Raw, handshake.Raw.Length - 9, secret, 0, 8);
+                            Array.Copy(handshake.Raw, size - 8, secret, 0, 8);
 
+                            // convert the results to 32 bit big endian byte arrays
                             byte[] result1bytes = BitConverter.GetBytes(result1);
                             byte[] result2bytes = BitConverter.GetBytes(result2);
                             if (BitConverter.IsLittleEndian)
@@ -133,26 +137,25 @@ namespace Nugget
                                 Array.Reverse(result2bytes);
                             }
 
+                            // concat the two integers and the 8 bytes from the client
                             byte[] prove = new byte[16];
                             Array.Copy(result1bytes, 0, prove, 0, 4);
                             Array.Copy(result2bytes, 0, prove, 4, 4);
                             Array.Copy(secret, 0, prove, 8, 8);
 
+                            // compute the md5 hash
                             MD5 md5 = System.Security.Cryptography.MD5.Create();
                             MD5prove = md5.ComputeHash(prove);
 
                             response = handshake.GetHostResponse()
                                 .Replace("{ORIGIN}", Origin)
-                                .Replace("{LOCATION}", Location + handshake.Fields["path"])
-                                .Replace("{PROVE}", Encoding.UTF8.GetString(MD5prove));
+                                .Replace("{LOCATION}", Location + handshake.Fields["path"]);
                         }
                         break;
                     case WebSocketProtocolIdentifier.Unknown:
                     default:
                         throw new Exception("client handshake was invalid"); // the client handshake was not valid
                 }
-
-                // put the relevant information into the handshake to send back to the client
 
                 // send the handshake, line by line
                 Log.Debug("sending handshake");
@@ -161,6 +164,13 @@ namespace Nugget
                     Log.Debug("send: " + line);
                     writer.WriteLine(line);
                 }
+                writer.Flush();
+                if (handshake.Protocol == WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00)
+                {
+                    socket.Send(MD5prove);
+                }
+                 
+
             }
             return handshake;
         }
