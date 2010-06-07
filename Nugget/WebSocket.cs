@@ -13,7 +13,7 @@ namespace Nugget
         public Socket Socket
         {
             get { return _socket; }
-            set { _socket = value; Receive(); }
+            set { _socket = value; }
         }
         public WebSocketProtocolIdentifier Protocol { get; set; }
 
@@ -119,7 +119,7 @@ namespace Nugget
             }
         }
 
-        private void Receive()
+        public void Receive()
         {
             try
             {

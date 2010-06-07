@@ -1,0 +1,41 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+
+    <title>Test</title>
+    <script>
+        $(document).ready(function () {
+            var message = "hi from the test script";
+            for (var i = 0; i < 10; i++) {
+                var ws = new WebSocket("ws://localhost:8181/test");
+
+                ws.onmessage = function (evt) {
+                    var msg = "unknown";
+                    if (evt.data == message)
+                        msg = "ok";
+                    else
+                        msg = "fail";
+                    $('#result').append('<li>' + msg + '</li>');
+                };
+
+                ws.onopen = function () {
+                    this.send(message);
+                };
+
+                ws.onclose = function () {
+                    $('#result').append('<li>fail</li>');
+                }
+
+            }
+            $('#result').append('<li>waa</li>');
+
+        });
+    </script>
+  
+</head>
+<body>
+<ul id="result"></ul>
+</body>
+</html>
