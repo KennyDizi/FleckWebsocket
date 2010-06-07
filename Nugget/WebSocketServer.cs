@@ -75,10 +75,6 @@ namespace Nugget
                 webSocket.Socket = clientSocket;
                 webSocket.Protocol = shake.Protocol;
 
-                // workaround to counter a bug that causes the first message sent to the socket to be lost
-                byte[] dummy = new byte[2] { 0, 255 };
-                clientSocket.Send(dummy);
-
                 // tell the client that it is succesfully connected
                 webSocket.Connected();
                 
