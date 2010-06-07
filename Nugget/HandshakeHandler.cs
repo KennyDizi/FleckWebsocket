@@ -64,7 +64,7 @@ namespace Nugget
                 Log.Debug("protocol identified as: " + handshake.Protocol);
 
                 string response = "";
-                byte[] MD5proof = null;
+                byte[] MD5Answer = null;
 
                 // check if the client handshake is valid
                 switch (handshake.Protocol)
@@ -138,14 +138,14 @@ namespace Nugget
                             }
 
                             // concat the two integers and the 8 bytes from the client
-                            byte[] proof = new byte[16];
-                            Array.Copy(result1bytes, 0, proof, 0, 4);
-                            Array.Copy(result2bytes, 0, proof, 4, 4);
-                            Array.Copy(challenge, 0, proof, 8, 8);
+                            byte[] answer = new byte[16];
+                            Array.Copy(result1bytes, 0, answer, 0, 4);
+                            Array.Copy(result2bytes, 0, answer, 4, 4);
+                            Array.Copy(challenge, 0, answer, 8, 8);
 
                             // compute the md5 hash
                             MD5 md5 = System.Security.Cryptography.MD5.Create();
-                            MD5proof = md5.ComputeHash(proof);
+                            MD5Answer = md5.ComputeHash(answer);
 
                             // put the relevant info into the response (the 
                             response = handshake.GetHostResponse()
@@ -166,9 +166,12 @@ namespace Nugget
                     writer.WriteLine(line);
                 }
                 writer.Flush();
+
+                // if this is using the draft_ietf_hybi_thewebsocketprotocol_00 protocol, we need to send to answer to the challenge
                 if (handshake.Protocol == WebSocketProtocolIdentifier.draft_ietf_hybi_thewebsocketprotocol_00)
                 {
-                    socket.Send(MD5proof);
+                    Log.Debug("send: answer to challenge");
+                    socket.Send(MD5Answer);
                 }
                  
 
