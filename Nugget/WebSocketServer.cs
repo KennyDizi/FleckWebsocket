@@ -65,27 +65,24 @@ namespace Nugget
             // get the socket
             var clientSocket = ListenerSocker.EndAccept(asyn);
             Log.Info("new connection from " + clientSocket.RemoteEndPoint);
-
-            WebSocket webSocket;
+            
             try
             {
-                // greet the newcommer with a (friendly) handshake
-                var shake = Shaker.Shake(clientSocket);
-                // create the object to handle the new connection
-                webSocket = SocketFactory.Create(shake.Fields["path"]);
-                // tell the newcommer about the context
-                webSocket.Socket = clientSocket;
-                webSocket.Protocol = shake.Protocol;
+                Shaker.Shake(clientSocket, (handshake, socket) =>
+                {
+                    WebSocket webSocket = SocketFactory.Create(handshake.Fields["path"]);
+                    // tell the newcommer about the context
+                    webSocket.Socket = socket;
+                    webSocket.Protocol = handshake.Protocol;
+                    webSocket.Receive();
+                    webSocket.Connected();
+                });
 
-                // tell the client that it is succesfully connected
-                webSocket.Receive();
-                webSocket.Connected();
             }
             catch (Exception e)
             {
                 // log the failed connection attempt
                 Log.Error("Exception thrown from method OnClientConnect:\n" + e.Message);
-                clientSocket.Close();
             }
             // listen some more
             ListenForClients();
