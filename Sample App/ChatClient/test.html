@@ -14,7 +14,7 @@
                 ws.onmessage = function (evt) {
                     var msg = "unknown";
                     if (evt.data == message)
-                        msg = "ok";
+                        msg = "connected";
                     else
                         msg = "fail";
                     $('#result').append('<li>' + msg + '</li>');
@@ -25,9 +25,8 @@
                 };
 
                 ws.onclose = function () {
-                    $('#result').append('<li>fail</li>');
+                    $('#result').append('<li>closed</li>');
                 }
-
             }
             $('#result').append('<li>waa</li>');
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace Nugget
 {
@@ -50,11 +51,11 @@ namespace Nugget
         {
             {
                 WebSocketProtocolIdentifier.draft_hixie_thewebsocketprotocol_75, 
-                "HTTP/1.1 101 Web Socket Protocol Handshake\n"+
-                "Upgrade: WebSocket\n"+
-                "Connection: Upgrade\n"+
-                "WebSocket-Origin: {ORIGIN}\n"+
-                "WebSocket-Location: {LOCATION}\n"+
+                "HTTP/1.1 101 Web Socket Protocol Handshake\r\n"+
+                "Upgrade: WebSocket\r\n"+
+                "Connection: Upgrade\r\n"+
+                "WebSocket-Origin: {ORIGIN}\r\n"+
+                "WebSocket-Location: {LOCATION}\r\n"+
                 "\r\n"
             },
             {
@@ -83,7 +84,7 @@ namespace Nugget
         {
             Raw = handshakeRaw;
             var handshake = Encoding.UTF8.GetString(handshakeRaw, 0, length).Replace("\r\n", "\n");
-            Log.Debug("client handshake:\n" + handshake);
+            Log.Debug("client handshake:\n"+handshake);            
 
             foreach (var pattern in ClientPatterns)
             {
