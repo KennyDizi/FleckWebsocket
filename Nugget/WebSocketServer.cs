@@ -10,7 +10,6 @@ namespace Nugget
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
-        private HandshakeHandler Shaker;
         public Socket ListenerSocker { get; private set; }
         public string Location { get; private set; }
         public int Port { get; private set; }
@@ -27,7 +26,6 @@ namespace Nugget
             Port = port;
             Origin = origin;
             Location = location;
-            Shaker = new HandshakeHandler(origin, location);
         }
 
         /// <summary>
@@ -57,33 +55,26 @@ namespace Nugget
         }
 
         // a new client is trying to connect
-        private void OnClientConnect(IAsyncResult asyn)
+        private void OnClientConnect(IAsyncResult ar)
         {
 
+            var clientSocket = ListenerSocker.EndAccept(ar);
+            var shaker = new HandshakeHandler(Origin, Location);
+            shaker.OnSuccess = (handshake) =>
+            {
+                // create the web socket object based on the path requested
+                var ws = SocketFactory.Create(handshake.ResourcePath);
+                ws.Socket = clientSocket;
 
+                // let the web socket know that it is connected
+                ws.Connected(handshake);
 
-            // get the socket
-            var clientSocket = ListenerSocker.EndAccept(asyn);
-            Log.Info("new connection from " + clientSocket.RemoteEndPoint);
+                // start receiving data
+                ws.Receive();
+            };
+
+            shaker.Shake(clientSocket);
             
-            try
-            {
-                Shaker.Shake(clientSocket, (handshake, socket) =>
-                {
-                    WebSocket webSocket = SocketFactory.Create(handshake.Fields["path"]);
-                    // tell the newcommer about the context
-                    webSocket.Socket = socket;
-                    webSocket.Protocol = handshake.Protocol;
-                    webSocket.Receive();
-                    webSocket.Connected();
-                });
-
-            }
-            catch (Exception e)
-            {
-                // log the failed connection attempt
-                Log.Error("Exception thrown from method OnClientConnect:\n" + e.Message);
-            }
             // listen some more
             ListenForClients();
         }

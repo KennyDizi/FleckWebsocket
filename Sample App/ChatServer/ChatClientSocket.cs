@@ -34,7 +34,7 @@ namespace ChatServer
             }
         }
 
-        public override void Connected()
+        public override void Connected(ClientHandshake handshake)
         {
             me = new User() { Name = "john doe", WebSocket = this };
             ChatServer.Users.Add(me);
