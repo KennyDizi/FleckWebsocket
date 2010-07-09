@@ -15,11 +15,10 @@ namespace Nugget
             get { return _socket; }
             set { _socket = value; }
         }
-        public WebSocketProtocolIdentifier Protocol { get; set; }
 
         public abstract void Incomming(string data);
         public abstract void Disconnected();
-        public abstract void Connected();
+        public abstract void Connected(ClientHandshake handshake);
 
         #region state obj
         // State object for receiving data from remote device.

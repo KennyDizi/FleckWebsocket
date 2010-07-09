@@ -18,7 +18,7 @@ namespace ChatServer
             //
         }
 
-        public override void Connected()
+        public override void Connected(ClientHandshake handshake)
         {
             //
         }

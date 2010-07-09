@@ -16,7 +16,7 @@ namespace ChatServer
             wss = new WebSocketServer(8181, "http://localhost:8080", "ws://localhost:8181");
             wss.RegisterHandler<ChatClientSocket>("/chat");
             wss.RegisterHandler<TestSocket>("/test");
-            Log.Level = LogLevel.Error;
+            //Log.Level = LogLevel.Error;
             wss.Start();
             KeepAlive();
         }
