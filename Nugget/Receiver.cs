@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 namespace Nugget
 {
-    public class Receiver
+    class Receiver
     {
         public Socket Socket { get; set; }
         public WebSocketWrapper WebSocket { get; set; }

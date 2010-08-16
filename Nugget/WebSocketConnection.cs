@@ -47,8 +47,23 @@ namespace Nugget
             }
         }
 
-        public Sender Sender { get; private set; }
-        public Receiver Receiver { get; private set; }
+        public void SetModelFactory(object factory)
+        {
+            Receiver.Factory = new ModelFactoryWrapper(factory);
+        }
+
+        public void Send(string data)
+        {
+            Sender.Send(data);
+        }
+
+        public void StartReceiving()
+        {
+            Receiver.Receive();
+        }
+
+        private Sender Sender { get; set; }
+        private Receiver Receiver { get; set; }
 
         public WebSocketConnection()
         {
