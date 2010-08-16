@@ -6,21 +6,23 @@ using Nugget;
 
 namespace ChatServer
 {
-    class TestSocket : WebSocket
+    class TestSocket : IWebSocket<string>
     {
-        public override void Incomming(string data)
+        public void Incomming(string data)
         {
-            Send(data);
+            //Send(data);
         }
 
-        public override void Disconnected()
+        public void Disconnected()
         {
             //
         }
 
-        public override void Connected(ClientHandshake handshake)
+        public void Connected(ClientHandshake handshake)
         {
             //
         }
+
+        
     }
 }

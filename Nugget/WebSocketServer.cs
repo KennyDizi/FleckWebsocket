@@ -10,6 +10,9 @@ namespace Nugget
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
+
+        private ModelFactoryStore Factories = new ModelFactoryStore();
+
         public Socket ListenerSocker { get; private set; }
         public string Location { get; private set; }
         public int Port { get; private set; }
@@ -33,9 +36,19 @@ namespace Nugget
         /// </summary>
         /// <typeparam name="TSocket">the class to handle the connection, a new object of this class is instantiated for every new connection</typeparam>
         /// <param name="path">the path the class should respond to</param>
-        public void RegisterHandler<TSocket>(string path) where TSocket : WebSocket
+        public void RegisterHandler<TSocket, TModel>(string path) where TSocket : IWebSocket<TModel>
         {
-            SocketFactory.Register<TSocket>(path);
+            SocketFactory.Register<TSocket,TModel>(path);
+        }
+
+        public void RegisterHandler<TSocket>(string path) where TSocket : IWebSocket<string>
+        {
+            SocketFactory.Register<TSocket, string>(path);
+        }
+        
+        public void RegisterFactory<TModel>(ISubProtocolModelFactory<TModel> factory, string subprotocol)
+        {
+            Factories.Register(factory, subprotocol);
         }
 
         public void Start()
@@ -62,12 +75,19 @@ namespace Nugget
             var shaker = new HandshakeHandler(Origin, Location);
             shaker.OnSuccess = (handshake) =>
             {
+
                 // create the web socket object based on the path requested
                 var ws = SocketFactory.Create(handshake.ResourcePath);
                 ws.Socket = clientSocket;
+                
+                if(handshake.SubProtocol != null)
+                {
+                    ws.Factory = new ModelFactoryWrapper(Factories.Get(handshake.SubProtocol));
+                }
+                
 
                 // let the web socket know that it is connected
-                ws.Connected(handshake);
+                ws.WebSocket.Connected(handshake);
 
                 // start receiving data
                 ws.Receive();

@@ -6,35 +6,41 @@ using Nugget;
 
 namespace ChatServer
 {
-    public class ChatClientSocket : WebSocket
+    public class ChatClientSocket : IWebSocket<Message>, IWebSocket<string>
     {
 
         User me;
 
-        public override void Incomming(string data)
+
+        public void Incomming(string data)
         {
-            if (data.StartsWith("/nick "))
-            {
-                me.Name = data.Replace("/nick ", "");
-                Send("You are now know as " + me.Name);
-            }
-            else
-            {
-                foreach (var user in ChatServer.Users)
-                {
-                    if (user.WebSocket != this)
-                    {
-                        user.WebSocket.Send(me.Name + ": " + data);
-                    }
-                    else
-                    {
-                        Send("me: " + data);
-                    }
-                }
-            }
+            var x = 2;
         }
 
-        public override void Connected(ClientHandshake handshake)
+        public void Incomming(Message msg)
+        {
+            if (msg.Command == "nick")
+            {
+                me.Name = msg.Arguments[0];
+                //Send("You are now known as " + me.Name);
+                return;
+            }
+            
+            foreach (var user in ChatServer.Users)
+            {
+                if (user.WebSocket != this)
+                {
+                    //user.WebSocket.Send(me.Name + ": " + msg.Msg);
+                }
+                else
+                {
+                    //Send("me: " + msg.Msg);
+                }
+            }
+            
+        }
+
+        public void Connected(ClientHandshake handshake)
         {
             me = new User() { Name = "john doe", WebSocket = this };
             ChatServer.Users.Add(me);
@@ -43,21 +49,23 @@ namespace ChatServer
             {
                 if (user.WebSocket != this)
                 {
-                    user.WebSocket.Send(me.Name+" connected");
+                    //user.WebSocket.Send(me.Name+" connected");
                 }
             }
         }
 
-        public override void Disconnected()
+        public void Disconnected()
         {
             foreach (var user in ChatServer.Users)
             {
                 if (user.WebSocket != this)
                 {
-                    user.WebSocket.Send(me.Name + " disconnected");
+                    //user.WebSocket.Send(me.Name + " disconnected");
                 }
             }
             ChatServer.Users.Remove(me);
         }
+
+        
     }
 }
