@@ -75,11 +75,16 @@
   <ItemGroup>
     <Compile Include="HandshakeHandler.cs" />
     <Compile Include="Handshakes.cs" />
+    <Compile Include="IReceivingWebSocket.cs" />
     <Compile Include="IWebSocket.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="ISubProtocolModelFactory.cs" />
     <Compile Include="ModelFactoryStore.cs" />
     <Compile Include="ModelFactoryWrapper.cs" />
+    <Compile Include="Receiver.cs" />
+    <Compile Include="Sender.cs" />
+    <Compile Include="SendingWebSocket.cs" />
+    <Compile Include="StateObject.cs" />
     <Compile Include="WebSocket.cs" />
     <Compile Include="WebSocketFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

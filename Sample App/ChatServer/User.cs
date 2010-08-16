@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ChatServer
 {
-    class User
+    public class User
     {
         public string Name { get; set; }
         public ChatClientSocket WebSocket { set; get; }

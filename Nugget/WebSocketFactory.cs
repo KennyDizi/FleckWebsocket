@@ -20,7 +20,7 @@ namespace Nugget
         /// </summary>
         /// <typeparam name="T">The web socket client type</typeparam>
         /// <param name="path">The path that the client should respond to</param>
-        public void Register<T,U>(string path) where T : IWebSocket<U>
+        public void Register<T>(string path) where T : IWebSocket
         {
             if (!types.ContainsKey(path))
             {
@@ -45,16 +45,16 @@ namespace Nugget
                 try
                 {
                     var ws = container.Resolve(types[path]);
-                    var wsc = new WebSocketConnection();
-                    wsc.WebSocket = new WebSocketWrapper(ws);
+                    var wsc = new WebSocketConnection(new WebSocketWrapper(ws));
+                    var sws = (ASendingWebSocket)ws;
+                    sws.Connection = wsc;
+
                     return wsc;
                 }
                 catch (Exception e)
                 {
                     return null;
-                    
                 }
-                
             }
             else
             {

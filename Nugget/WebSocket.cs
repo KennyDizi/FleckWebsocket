@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Nugget
 {
-    abstract class WebSocket
+    public abstract class WebSocket<T> : ASendingWebSocket, IWebSocket, IReceivingWebSocket<T>
     {
-        private WebSocketConnection connection;
+        public abstract void Incomming(T data);
+        public abstract void Disconnected();
+        public abstract void Connected(ClientHandshake handshake);
 
-        public void Send(string data)
-        {
-            connection.Send(data);
-        }
     }
+
+    public abstract class WebSocket : WebSocket<string> { } // default to string
 }

@@ -5,10 +5,8 @@ using System.Text;
 
 namespace Nugget
 {
-    public interface IWebSocket
+    interface IReceivingWebSocket<T>
     {
-        void Disconnected();
-        void Connected(ClientHandshake handshake);
+        void Incomming(T data);
     }
-
 }

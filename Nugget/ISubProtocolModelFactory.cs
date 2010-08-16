@@ -7,6 +7,6 @@ namespace Nugget
 {
     public interface ISubProtocolModelFactory<TModel>
     {
-        TModel Create(string data);
+        TModel Create(string data, WebSocketConnection connection);
     }
 }
