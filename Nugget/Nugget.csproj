@@ -83,7 +83,7 @@
     <Compile Include="ModelFactoryWrapper.cs" />
     <Compile Include="Receiver.cs" />
     <Compile Include="Sender.cs" />
-    <Compile Include="SendingWebSocket.cs" />
+    <Compile Include="ASendingWebSocket.cs" />
     <Compile Include="StateObject.cs" />
     <Compile Include="WebSocket.cs" />
     <Compile Include="WebSocketFactory.cs" />
