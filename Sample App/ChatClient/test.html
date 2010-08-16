@@ -22,7 +22,7 @@
             for (var i = 0; i < count; i++) {
                 var ws;
                 try {
-                    ws = new WebSocket("ws://localhost:8181/test");
+                    ws = new WebSocket("ws://localhost:8181/test", "msg");
                 } catch (e) {
                     addError(e);
                 }
