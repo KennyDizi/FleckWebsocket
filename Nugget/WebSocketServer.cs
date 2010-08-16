@@ -76,7 +76,7 @@ namespace Nugget
                 
                 if(handshake.SubProtocol != null)
                 {
-                    wsc.Receiver.Factory = new ModelFactoryWrapper(ModelFactories.Get(handshake.SubProtocol));
+                    wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
                 }
                 
 
@@ -84,7 +84,7 @@ namespace Nugget
                 wsc.WebSocket.Connected(handshake);
 
                 // start receiving data
-                wsc.Receiver.Receive();
+                wsc.StartReceiving();
             };
 
             shaker.Shake(clientSocket);

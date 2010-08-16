@@ -10,7 +10,7 @@ namespace Nugget
         public WebSocketConnection Connection { get; set; }
         public void Send(string data)
         {
-            Connection.Sender.Send(data);
+            Connection.Send(data);
         }
 
     }
