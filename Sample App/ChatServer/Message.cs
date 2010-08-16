@@ -6,43 +6,21 @@ using Nugget;
 
 namespace ChatServer
 {
-    public class MessageFactory : ISubProtocolModelFactory<Message>
+    public class MessageFactory : ISubProtocolModelFactory<ChatMessage>
     {
-        public Message Create(string msg)
+        public ChatMessage Create(string data, WebSocketConnection connection)
         {
-            var m = new Message();
-            if (msg.Contains("/"))
-            {
-                var words = msg.Split(' ');
-                m.Command = words[0].Substring(1);
-                foreach (var word in words)
-                {
-                    m.Arguments.Add(word);
-                }
-            }
-            else
-            {
-                m.Msg = msg;
-            }
+            var m = new ChatMessage();
+            m.Message = data;
+            m.Sender = ChatServer.Users.SingleOrDefault(x => x.WebSocket.Connection == connection);
             return m;
         }
     }
 
 
-    public class Message
+    public class ChatMessage
     {
-        public string Command { get; set; }
-        public List<string> Arguments { get; set; }
-        public string Msg { get; set; }
-
-        public Message()
-        {
-               
-        }
-
-        public Message(string msg)
-        {
-            Msg = msg;
-        }
+        public User Sender { get; set; }
+        public string Message { get; set; }
     }
 }

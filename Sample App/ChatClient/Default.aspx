@@ -31,7 +31,7 @@
 
             debug("Connecting to " + host + " ...");
             try {
-                ws = new WebSocket(host); // create the web socket
+                ws = new WebSocket(host, "msg"); // create the web socket
             } catch (err) {
                 debug(err, 'error');
             }

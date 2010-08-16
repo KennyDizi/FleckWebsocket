@@ -6,7 +6,7 @@ using Nugget;
 
 namespace ChatServer
 {
-    class TestSocket : IWebSocket<string>
+/*    class TestSocket : IWebSocket<string>
     {
         public void Incomming(string data)
         {
@@ -24,5 +24,5 @@ namespace ChatServer
         }
 
         
-    }
+    }*/
 }

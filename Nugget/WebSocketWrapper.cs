@@ -6,18 +6,16 @@ using System.Reflection;
 
 namespace Nugget
 {
-    class WebSocketWrapper
+    public class WebSocketWrapper
     {
         private object webSocket;
         MethodInfo[] incomming;
-        MethodInfo connected;
-        MethodInfo disconnected;
         Type[] modelTypes;
 
         public WebSocketWrapper(object ws)
         {
             webSocket = ws;
-            var interfaces = webSocket.GetType().GetInterfaces().Where(x => x.Name == "IWebSocket`1").ToArray();
+            var interfaces = webSocket.GetType().GetInterfaces().Where(x => x.Name == "IReceivingWebSocket`1").ToArray();
             modelTypes = new Type[interfaces.Length];
             incomming = new MethodInfo[modelTypes.Length];
 
@@ -36,41 +34,39 @@ namespace Nugget
                     }
                 }
             }
-
             
-            connected = webSocket.GetType().GetMethods().SingleOrDefault(x => x.Name == "Connected");
-            disconnected = webSocket.GetType().GetMethods().SingleOrDefault(x => x.Name == "Disconnected");
-
-            
-                
-                //("IWebSocket`1").GetGenericArguments()[0];
-
         }
 
         public void Incomming(object model)
         {
+            bool methodFound = false;
             for(int i = 0; i < incomming.Length; i++)
             {
                 if (model.GetType() == modelTypes[i])
                 {
                     incomming[i].Invoke(webSocket, new object[] { model });
+                    methodFound = true;
+                    break; // only one method will fit the model
                 }
-                else
-                {
-                    //
-                }
+            }
+
+            if (!methodFound)
+            {
+                var socketName = webSocket.GetType().Name;
+                var modelName = model.GetType().Name;
+                Log.Warn(socketName + " can't handle model of type: " + modelName);
             }
 
         }
 
         public void Connected(ClientHandshake handshake)
         {
-            connected.Invoke(webSocket, new object[] { handshake });
+            ((IWebSocket)webSocket).Connected(handshake);
         }
 
         public void Disconnected()
         {
-            disconnected.Invoke(webSocket, null);
+            ((IWebSocket)webSocket).Disconnected();
         }
     }
 }
