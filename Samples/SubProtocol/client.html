@@ -1,0 +1,47 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>websocket client</title>
+        <script type="text/javascript">
+            var ws;
+            var start = function () {
+                var debug = document.getElementById('debug');
+                debug.innerHTML += "connecting to server ..<br/>";
+
+                ws = new WebSocket('ws://localhost:8181/subsample', 'post');
+
+                ws.onmessage = function (evt) {
+                    debug.innerHTML += evt.data + '<br/>';
+                };
+
+                ws.onopen = function () {
+                    debug.innerHTML += '.. connection open<br/>';
+                };
+
+                ws.onclose = function () {
+                    debug.innerHTML += '.. connection closed<br/>';
+                }
+
+                document.getElementById('submit_button').onclick = click;
+            }
+
+
+            var click = function () {
+                var name = document.getElementById('name').value;
+                var msg = document.getElementById('message').value;
+                var json = JSON.stringify({ author: name, body: msg });
+                debug.innerHTML += "sending " + json + "<br/>";
+                ws.send(json);
+            }
+
+            window.onload = start;
+        </script>
+	</head>
+	<body>
+    
+    <input type="text" name="name" id="name" value="name"/><br />
+    <input type="text" name="message" id="message" value="message" /><br />
+    <input type="submit" value="Send" id="submit_button" />
+    <pre id="debug"></pre>
+	</body>
+</html>
