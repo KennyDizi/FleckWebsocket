@@ -8,5 +8,6 @@ namespace Nugget
     public interface ISubProtocolModelFactory<TModel>
     {
         TModel Create(string data, WebSocketConnection connection);
+        bool IsValid(TModel model);
     }
 }

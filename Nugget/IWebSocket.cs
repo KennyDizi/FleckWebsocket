@@ -10,5 +10,4 @@ namespace Nugget
         void Disconnected();
         void Connected(ClientHandshake handshake);
     }
-
 }

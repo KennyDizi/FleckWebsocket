@@ -51,14 +51,14 @@ namespace Nugget
 
                     return wsc;
                 }
-                catch (Exception e)
+                catch
                 {
                     return null;
                 }
             }
             else
             {
-                throw new Exception("Path: '" + path + "' is not defined");
+                return null;
             }
         }
     }

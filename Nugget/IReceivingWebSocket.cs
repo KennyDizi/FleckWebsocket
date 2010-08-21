@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Nugget
 {
-    interface IReceivingWebSocket<T>
+    public interface IReceivingWebSocket<T>
     {
         void Incomming(T data);
     }

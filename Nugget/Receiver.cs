@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using Microsoft.Practices.Unity;
 
 namespace Nugget
 {
     class Receiver
     {
+        public const int BufferSize = 512;
         public Socket Socket { get; set; }
         public WebSocketWrapper WebSocket { get; set; }
-        public ModelFactoryWrapper Factory { get; set; }
+        public SubProtocolModelFactoryWrapper Factory { get; set; }
         public WebSocketConnection Connection { get; set; }
+
+        #region ctors
 
         public Receiver()
         {
@@ -28,116 +32,102 @@ namespace Nugget
             WebSocket = websocket;
         }
 
-        public Receiver(Socket socket, WebSocketWrapper websocket, ModelFactoryWrapper factory) : this(socket, websocket)
+        public Receiver(Socket socket, WebSocketWrapper websocket, SubProtocolModelFactoryWrapper factory) : this(socket, websocket)
         {
             Factory = factory;
         }
 
+        #endregion
 
-        private void Read(IAsyncResult ar)
+        private object CreateModel(string data)
         {
-            StateObject state = (StateObject)ar.AsyncState;
-            int sizeOfReceivedData = 0;
-            try
+            if (Factory != null)
             {
-                sizeOfReceivedData = state.workSocket.EndReceive(ar);
+                // call the create method on the factory(wrapper)
+                return Factory.Create(data, Connection);
             }
-            catch (Exception e)
+            else
             {
-                Log.Error("Exception thrown from method Read:\n" + e.Message);
-                WebSocket.Disconnected();
-                return;
+                return null;
             }
+        }
 
-
-            if (sizeOfReceivedData > 0)
+        private bool ModelIsValid(object model)
+        {
+            bool isValid = false;
+            if (Factory != null)
             {
-                int start = 0, end = state.buffer.Length - 1;
+                isValid = Factory.IsValid(model);
+            }
+            return isValid;
+        }
 
-                // if we are not already reading something, look for the start byte as specified in the protocol
-                if (!state.readingData)
+        public void Receive(StringBuilder sb = null)
+        {
+            
+            if (sb == null)
+                sb = new StringBuilder();
+
+            var buffer = new byte[BufferSize];
+
+            Socket.AsyncReceive(buffer, sb, (sizeOfReceivedData, stringBuilder) =>
+            {
+                var builder = (StringBuilder)stringBuilder;
+
+                if (sizeOfReceivedData > 0)
                 {
-                    for (start = 0; start < state.buffer.Length - 1; start++)
-                    {
-                        if (state.buffer[start] == state.StartWrap)
-                        {
-                            state.readingData = true; // we found the begining and can now start reading
-                            start++; // we dont need the start byte. Incrementing the start counter will walk us past it
-                            break;
-                        }
-                    }
-                } // no else here, the value of readingData might have changed
-
-                // if a begining was found in the buffer, or if we are continuing from another buffer
-                if (state.readingData)
-                {
-                    bool endIsInThisBuffer = false;
-                    // look for the end byte in the received data
-                    for (end = start; end < sizeOfReceivedData; end++)
-                    {
-                        byte currentByte = state.buffer[end];
-                        if (state.buffer[end] == state.EndWrap)
-                        {
-                            endIsInThisBuffer = true; // we found the ending byte
-                            break;
-                        }
-                    }
-
-                    // the end is in this buffer, which means that we are done reading
+                    int start = 0, end = buffer.Length - 1;
+                    
+                    var bufferList = buffer.ToList();
+                    bool endIsInThisBuffer = buffer.Contains((byte)255); // 255 = end
                     if (endIsInThisBuffer)
                     {
-                        // we are no longer reading data
-                        state.readingData = false;
-                        // put the data into the string builder
-                        state.sb.Append(Encoding.UTF8.GetString(state.buffer, start, end - start));
-                        // trigger the event
-                        int size = Encoding.UTF8.GetBytes(state.sb.ToString().ToCharArray()).Length;
-                        Log.Info(String.Format("Received {0} bytes of data from {1}", sizeOfReceivedData, state.workSocket.RemoteEndPoint));
+                        end = bufferList.IndexOf((byte)255);
+                        end--; // we dont want to include this byte
+                    }
 
-                        var data = state.sb.ToString();
-                        if (Factory != null)
+                    bool startIsInThisBuffer = buffer.Contains((byte)0); // 0 = start
+                    if (startIsInThisBuffer)
+                    {
+                        var zeroPos = bufferList.IndexOf((byte)0);
+                        if (zeroPos < end) // we might be looking at one of the bytes in the end of the array that hasn't been set
                         {
-                            WebSocket.Incomming(Factory.Create(data, Connection));
+                            start = bufferList.IndexOf((byte)0);
+                            start++; // we dont want to include this byte
                         }
-                        else
+                    }
+                    
+                    builder.Append(Encoding.UTF8.GetString(buffer, start, (end - start) + 1));
+
+                    if (endIsInThisBuffer)
+                    {
+                        var data = builder.ToString();
+
+                        var model = CreateModel(data);
+                        var isValid = ModelIsValid(model);
+
+                        // if the model was created it must be valid,
+                        if (isValid && Factory != null || model == null && Factory == null)
                         {
-                            WebSocket.Incomming(data);
+                            if (model == null && Factory == null) // if the factory is null, use the raw string
+                                model = (object)data;
+
+                            WebSocket.Incomming(model);
                         }
+
+                        Receive();
 
                     }
-                    else // if the end is not in this buffer then put everyting from start to the end of the buffer into the datastring and keep on reading
+                    else // end is not is this buffer
                     {
-                        state.sb.Append(Encoding.UTF8.GetString(state.buffer, start, end - start));
+                        Receive(builder); // continue to read
                     }
                 }
-
-                // continue listening for more data
-                Receive();
-            }
-            else // the socket is closed
-            {
-                WebSocket.Disconnected();
-            }
+                else // no data - the socket must be closed
+                {
+                    WebSocket.Disconnected();
+                }
+            });
         }
-
-        public void Receive()
-        {
-            try
-            {
-                // Create the state object.
-                StateObject state = new StateObject();
-                state.workSocket = Socket;
-
-                // Begin receiving the data from the remote device.
-                Socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(Read), state);
-            }
-            catch (Exception e)
-            {
-                Log.Error("Exception thrown from method Receive:\n" + e.Message);
-            }
-        }
-
-
     }
 }
