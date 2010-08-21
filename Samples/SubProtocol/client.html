@@ -8,7 +8,7 @@
                 var debug = document.getElementById('debug');
                 debug.innerHTML += "connecting to server ..<br/>";
 
-                ws = new WebSocket('ws://localhost:8181/subsample', 'post');
+                ws = new WebSocket('ws://localhost:8181/subsample', 'post'); // using the "post" subprotocol
 
                 ws.onmessage = function (evt) {
                     debug.innerHTML += evt.data + '<br/>';
