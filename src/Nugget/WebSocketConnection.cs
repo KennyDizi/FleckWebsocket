@@ -50,6 +50,8 @@ namespace Nugget
         private Sender Sender { get; set; }
         private Receiver Receiver { get; set; }
 
+        #region ctors
+
         public WebSocketConnection()
         {
             Sender = new Sender();
@@ -83,6 +85,8 @@ namespace Nugget
             Sender.Connection = this;
             Receiver.Connection = this;
         }
+
+        #endregion
 
         public void SetModelFactory(object factory)
         {

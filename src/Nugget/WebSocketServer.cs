@@ -12,6 +12,9 @@ namespace Nugget
         private WebSocketFactory SocketFactory = new WebSocketFactory();
         private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
 
+        /// <summary>
+        /// The socket that listens for conenctions
+        /// </summary>
         public Socket ListenerSocker { get; private set; }
         public string Location { get; private set; }
         public int Port { get; private set; }
@@ -40,11 +43,20 @@ namespace Nugget
             SocketFactory.Register<TSocket>(path);
         }
 
+        /// <summary>
+        /// Set the factory to use for the specified sub protocol
+        /// </summary>
+        /// <typeparam name="TModel">The type of the model that the factory creates</typeparam>
+        /// <param name="factory">An instance of the factory class</param>
+        /// <param name="subprotocol">the sub protocol that this factory should be used for</param>
         public void SetSubProtocolModelFactory<TModel>(ISubProtocolModelFactory<TModel> factory, string subprotocol)
         {
             ModelFactories.Store(factory, subprotocol);
         }
 
+        /// <summary>
+        /// Start the server
+        /// </summary>
         public void Start()
         {
             // create the main server socket, bind it to the local ip address and start listening for clients
