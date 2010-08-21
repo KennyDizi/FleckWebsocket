@@ -47,21 +47,6 @@ namespace Nugget
             }
         }
 
-        public void SetModelFactory(object factory)
-        {
-            Receiver.Factory = new ModelFactoryWrapper(factory);
-        }
-
-        public void Send(string data)
-        {
-            Sender.Send(data);
-        }
-
-        public void StartReceiving()
-        {
-            Receiver.Receive();
-        }
-
         private Sender Sender { get; set; }
         private Receiver Receiver { get; set; }
 
@@ -91,12 +76,27 @@ namespace Nugget
             Receiver.Connection = this;
         }
 
-        public WebSocketConnection(Socket socket, WebSocketWrapper websocket, ModelFactoryWrapper modelfactory)
+        public WebSocketConnection(Socket socket, WebSocketWrapper websocket, SubProtocolModelFactoryWrapper modelfactory)
         {
             Sender = new Sender(socket, websocket);
             Receiver = new Receiver(socket, websocket, modelfactory);
             Sender.Connection = this;
             Receiver.Connection = this;
+        }
+
+        public void SetModelFactory(object factory)
+        {
+            Receiver.Factory = new SubProtocolModelFactoryWrapper(factory);
+        }
+
+        public void Send(string data)
+        {
+            Sender.Send(data);
+        }
+
+        public void StartReceiving()
+        {
+            Receiver.Receive();
         }
 
     }

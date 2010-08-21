@@ -66,8 +66,15 @@ namespace Nugget
             // parse the client handshake and generate a response handshake
             ClientHandshake = ParseClientHandshake(new ArraySegment<byte>(state.buffer, 0, receivedByteCount));
 
+            var hasRequiredFields = (ClientHandshake.ChallengeBytes != null) &&
+                                    (ClientHandshake.Host != null) &&
+                                    (ClientHandshake.Key1 != null) &&
+                                    (ClientHandshake.Key2 != null) &&
+                                    (ClientHandshake.Origin != null) &&
+                                    (ClientHandshake.ResourcePath != null);
+            
             // check if the information in the client handshake is valid
-            if ("ws://"+ClientHandshake.Host == Location && ClientHandshake.Origin == Origin)
+            if (hasRequiredFields && "ws://"+ClientHandshake.Host == Location && ClientHandshake.Origin == Origin)
             {
                 // generate a response for the client
                 var serverShake = GenerateResponseHandshake();
@@ -77,6 +84,8 @@ namespace Nugget
             else
             {
                 // the client shake isn't valid
+                Log.Debug("invalid handshake received from "+state.socket.LocalEndPoint);
+                state.socket.Close();
                 return;
             }
         }

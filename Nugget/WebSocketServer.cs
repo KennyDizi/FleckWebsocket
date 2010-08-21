@@ -10,7 +10,7 @@ namespace Nugget
     public class WebSocketServer
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
-        private ModelFactoryStore ModelFactories = new ModelFactoryStore();
+        private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
 
         public Socket ListenerSocker { get; private set; }
         public string Location { get; private set; }
@@ -39,10 +39,10 @@ namespace Nugget
         {
             SocketFactory.Register<TSocket>(path);
         }
-        
-        public void RegisterModelFactory<TModel>(ISubProtocolModelFactory<TModel> factory, string subprotocol)
+
+        public void SetSubProtocolModelFactory<TModel>(ISubProtocolModelFactory<TModel> factory, string subprotocol)
         {
-            ModelFactories.Register(factory, subprotocol);
+            ModelFactories.Store(factory, subprotocol);
         }
 
         public void Start()
@@ -69,22 +69,24 @@ namespace Nugget
             var shaker = new HandshakeHandler(Origin, Location);
             shaker.OnSuccess = (handshake) =>
             {
-
                 // create the web socket object based on the path requested
                 var wsc = SocketFactory.Create(handshake.ResourcePath);
-                wsc.Socket = clientSocket;
-                
-                if(handshake.SubProtocol != null)
+                if (wsc != null)
                 {
-                    wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
+                    wsc.Socket = clientSocket;
+
+                    if (handshake.SubProtocol != null)
+                    {
+                        wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
+                    }
+
+
+                    // let the web socket know that it is connected
+                    wsc.WebSocket.Connected(handshake);
+
+                    // start receiving data
+                    wsc.StartReceiving();
                 }
-                
-
-                // let the web socket know that it is connected
-                wsc.WebSocket.Connected(handshake);
-
-                // start receiving data
-                wsc.StartReceiving();
             };
 
             shaker.Shake(clientSocket);
