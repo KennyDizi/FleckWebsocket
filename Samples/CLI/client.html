@@ -1,0 +1,30 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>websocket client</title>
+        <script type="text/javascript">
+            var start = function () {
+                var inc = document.getElementById('incomming');
+                inc.innerHTML += "connecting to server ..<br/>";
+
+                var ws = new WebSocket('ws://localhost:8181/clisample');
+
+                ws.onmessage = function (evt) {
+                    inc.innerHTML += evt.data + '<br/>';
+                };
+
+                ws.onopen = function () {
+                    inc.innerHTML += '.. connection open<br/>';
+                };
+
+                ws.onclose = function () {
+                    inc.innerHTML += '.. connection closed<br/>';
+                }
+            }
+            window.onload = start;
+        </script>
+	</head>
+	<body>
+	<pre id="incomming"></pre>
+	</body>
+</html>
