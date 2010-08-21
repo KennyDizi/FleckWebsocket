@@ -8,6 +8,7 @@ namespace Nugget
 {
     public static class SocketExtension
     {
+        // class that wraps the two different kinds of callbacks (with or without state object)
         class Callback
         {
             Action<int> cb;
