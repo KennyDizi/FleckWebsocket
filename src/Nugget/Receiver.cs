@@ -108,6 +108,7 @@ namespace Nugget
                 else // no data - the socket must be closed
                 {
                     WebSocket.Disconnected();
+                    Socket.Close();
                 }
             });
         }

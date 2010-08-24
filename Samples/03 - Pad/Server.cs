@@ -8,8 +8,15 @@ namespace Pad
 {
     class PadSocket : WebSocket
     {
+        static List<PadSocket> sockets = new List<PadSocket>();
+
         public override void Incomming(string data)
         {
+            foreach (var item in sockets) // not much fun here, we are just ecco'ing the json string to the other sockets
+            {
+                if (item != this)
+                    item.Send(data);
+            }
         }
 
         public override void Disconnected()
@@ -18,6 +25,7 @@ namespace Pad
 
         public override void Connected(ClientHandshake handshake)
         {
+            sockets.Add(this);
         }
     }
 
