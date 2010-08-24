@@ -29,10 +29,20 @@ namespace Nugget
 
         public void Send(string data)
         {
-            Socket.AsyncSend(DataFrame.Wrap(data), (byteCount) => 
+            if (Socket.Connected)
             {
-                Log.Debug(byteCount + " bytes send to " + Socket.RemoteEndPoint);
-            });
+
+                Socket.AsyncSend(DataFrame.Wrap(data), (byteCount) =>
+                {
+                    Log.Debug(byteCount + " bytes send to " + Socket.RemoteEndPoint);
+                });
+            }
+            else
+            {
+                WebSocket.Disconnected();
+                Socket.Close();
+            }
+
         }
         
     }

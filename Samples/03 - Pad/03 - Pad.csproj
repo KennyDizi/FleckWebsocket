@@ -49,7 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="client.html" />
-    <Content Include="iframe.html" />
     <Content Include="jquery-1.4.min.js" />
     <Content Include="pad.js" />
   </ItemGroup>

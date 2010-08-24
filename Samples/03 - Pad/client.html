@@ -1,23 +1,23 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 	<head>
-		<title>Nugget Pad Sample</title>
-        <style type="text/css">
-            iframe {margin:10px;border:0;width:400px;height:550px;}
-        </style>
+		<title></title>
         <script src="jquery-1.4.min.js" type="text/javascript"></script>
         <script src="pad.js" type="text/javascript"></script>
         <script type="text/javascript">
             $(document).ready(function () {
-                new Pad($('#pads'));
-                /*
-                $('#pads').click(function () { alert('click2'); });
-                $('#pads').click(function () { alert('click1'); return false; });
-                $(document).click(function () { alert('root'); });*/
+                new Pad('a',$('#pads'));
+                new Pad('b',$('#pads'));
             });
         </script>
+        <style type="text/css">
+            .pad { float:left; width:14em; height:20em; border:1px solid #333333; margin:10px }
+            .not_connected { background-color: #777777; }
+            .connecting  { background-color: #bbbbbb; }
+            .changed { background-color: #00ff00; }
+        </style>
     </head>
 	<body>
-	<div id="pads" style="border:1px solid #000000;"></div>
+	<div id="pads"></div>
 	</body>
 </html>
