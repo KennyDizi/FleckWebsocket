@@ -70,7 +70,7 @@ namespace JONSParser
                 }
                 result = undefined;
             }
-            else if (binder.Name == "hasOwnProperty")
+            else if (binder.Name == "hasOwnProperty" || binder.Name == "__has")
             {
                 if (binder.CallInfo.ArgumentCount == 1)
                 {
