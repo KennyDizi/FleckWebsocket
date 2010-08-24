@@ -166,6 +166,10 @@ namespace Nugget
             responseHandshake.Location = "ws://" + ClientHandshake.Host + ClientHandshake.ResourcePath;
             responseHandshake.Origin = ClientHandshake.Origin;
             responseHandshake.SubProtocol = ClientHandshake.SubProtocol;
+
+            var challenge = new byte[8];
+            Array.Copy(ClientHandshake.ChallengeBytes.Array, ClientHandshake.ChallengeBytes.Offset, challenge, 0, 8);
+            
             byte[] bytes;
             CalculateAnswerBytes(out bytes, ClientHandshake.Key1, ClientHandshake.Key2, ClientHandshake.ChallengeBytes);
             responseHandshake.AnswerBytes = bytes;
@@ -205,7 +209,7 @@ namespace Nugget
 
             if (OnSuccess != null)
             {
-                OnSuccess(ClientHandshake);                
+                OnSuccess(ClientHandshake);
             }
         }
         

@@ -114,6 +114,9 @@ namespace Nugget
         
         public static void AsyncReceive(this Socket socket, byte[] buffer, object state, Action<int, object> callback)
         {
+            if (state == null)
+                throw new InvalidOperationException("State cannot be null");
+
             socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(ReceiveCallback), new State() { Socket = socket, Callback = new Callback(callback), UserDefinedState = state });
         }
 

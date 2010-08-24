@@ -9,7 +9,7 @@ namespace Nugget
 {
     class Receiver
     {
-        public const int BufferSize = 512;
+        public const int BufferSize = 256;
         public Socket Socket { get; set; }
         public WebSocketWrapper WebSocket { get; set; }
         public SubProtocolModelFactoryWrapper Factory { get; set; }
@@ -62,46 +62,28 @@ namespace Nugget
             return isValid;
         }
 
-        public void Receive(StringBuilder sb = null)
+        public void Receive(DataFrame frame = null)
         {
-            
-            if (sb == null)
-                sb = new StringBuilder();
+
+            if (frame == null)
+                frame = new DataFrame();
 
             var buffer = new byte[BufferSize];
 
-            Socket.AsyncReceive(buffer, sb, (sizeOfReceivedData, stringBuilder) =>
+            if(Socket == null || !Socket.Connected)
+                WebSocket.Disconnected();
+
+            Socket.AsyncReceive(buffer, frame, (sizeOfReceivedData, df) =>
             {
-                var builder = (StringBuilder)stringBuilder;
+                var dataframe = (DataFrame)df;
 
                 if (sizeOfReceivedData > 0)
                 {
-                    int start = 0, end = buffer.Length - 1;
-                    
-                    var bufferList = buffer.ToList();
-                    bool endIsInThisBuffer = buffer.Contains((byte)255); // 255 = end
-                    if (endIsInThisBuffer)
-                    {
-                        end = bufferList.IndexOf((byte)255);
-                        end--; // we dont want to include this byte
-                    }
+                    dataframe.Append(buffer);
 
-                    bool startIsInThisBuffer = buffer.Contains((byte)0); // 0 = start
-                    if (startIsInThisBuffer)
+                    if (dataframe.IsComplete)
                     {
-                        var zeroPos = bufferList.IndexOf((byte)0);
-                        if (zeroPos < end) // we might be looking at one of the bytes in the end of the array that hasn't been set
-                        {
-                            start = bufferList.IndexOf((byte)0);
-                            start++; // we dont want to include this byte
-                        }
-                    }
-                    
-                    builder.Append(Encoding.UTF8.GetString(buffer, start, (end - start) + 1));
-
-                    if (endIsInThisBuffer)
-                    {
-                        var data = builder.ToString();
+                        var data = dataframe.ToString();
 
                         var model = CreateModel(data);
                         var isValid = ModelIsValid(model);
@@ -120,7 +102,7 @@ namespace Nugget
                     }
                     else // end is not is this buffer
                     {
-                        Receive(builder); // continue to read
+                        Receive(dataframe); // continue to read
                     }
                 }
                 else // no data - the socket must be closed
