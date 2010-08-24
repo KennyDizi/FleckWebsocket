@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFrame.cs" />
     <Compile Include="HandshakeHandler.cs" />
     <Compile Include="Handshakes.cs" />
     <Compile Include="IReceivingWebSocket.cs" />

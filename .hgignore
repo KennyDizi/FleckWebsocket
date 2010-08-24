@@ -1,11 +1,6 @@
-# use glob syntax.
 syntax: glob
-src/Nugget/bin/*
-src/Nugget/obj/*
-Samples/CLI/bin/*
-Samples/CLI/obj/*
-Samples/SubProtocol/bin/*
-Samples/SubProtocol/obj/*
-
 *.suo
 *.user
+*/bin/*
+*/obj/*
+Tests/*.xml

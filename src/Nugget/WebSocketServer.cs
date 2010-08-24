@@ -4,18 +4,20 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Nugget
 {
-    public class WebSocketServer
+    public class WebSocketServer : IDisposable
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
         private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
+        private bool running = false;
 
         /// <summary>
         /// The socket that listens for conenctions
         /// </summary>
-        public Socket ListenerSocker { get; private set; }
+        public Socket ListenerSocket { get; private set; }
         public string Location { get; private set; }
         public int Port { get; private set; }
         public string Origin { get; private set; }
@@ -60,24 +62,47 @@ namespace Nugget
         public void Start()
         {
             // create the main server socket, bind it to the local ip address and start listening for clients
-            ListenerSocker = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            ListenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             IPEndPoint ipLocal = new IPEndPoint(IPAddress.Any, Port);
-            ListenerSocker.Bind(ipLocal);
-            ListenerSocker.Listen(100);
-            Log.Info("Server stated on " + ListenerSocker.LocalEndPoint);
+            ListenerSocket.Bind(ipLocal);
+            ListenerSocket.Listen(100);
+            Log.Info("Server stated on " + ListenerSocket.LocalEndPoint);
             ListenForClients();
+            running = true;
+
+            var keepalive = new Thread(new ThreadStart(() =>
+                {
+                    while (running)
+                    {
+                        Thread.Sleep(100);
+                    }
+                }));
+
+            keepalive.Start();
+
         }
 
         private void ListenForClients()
         {
-            ListenerSocker.BeginAccept(new AsyncCallback(OnClientConnect), null);
+            ListenerSocket.BeginAccept(new AsyncCallback(OnClientConnect), null);
         }
 
         // a new client is trying to connect
         private void OnClientConnect(IAsyncResult ar)
         {
+            Socket clientSocket = null;
+            
+            try
+            {
+                clientSocket = ListenerSocket.EndAccept(ar);
+            }
+            catch
+            {
+                Log.Error("Listener socket is closed");
+                return;
+            }
+            
 
-            var clientSocket = ListenerSocker.EndAccept(ar);
             var shaker = new HandshakeHandler(Origin, Location);
             shaker.OnSuccess = (handshake) =>
             {
@@ -92,12 +117,12 @@ namespace Nugget
                         wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
                     }
 
-
                     // let the web socket know that it is connected
                     wsc.WebSocket.Connected(handshake);
 
                     // start receiving data
                     wsc.StartReceiving();
+                    
                 }
             };
 
@@ -105,6 +130,17 @@ namespace Nugget
             
             // listen some more
             ListenForClients();
+        }
+
+        public void Dispose()
+        {
+            Stop();
+            ListenerSocket.Dispose();
+        }
+
+        public void Stop()
+        {
+            running = false;
         }
     }
 

@@ -29,16 +29,7 @@ namespace Nugget
 
         public void Send(string data)
         {
-            // Convert the string data to byte data using UTF8 encoding.
-            byte[] byteData = Encoding.UTF8.GetBytes(data);
-
-            // wrap the array with the wrapper bytes
-            byte[] wrappedArray = new byte[byteData.Length + 2];
-            wrappedArray[0] = 0;
-            wrappedArray[wrappedArray.Length - 1] = 255;
-            Array.Copy(byteData, 0, wrappedArray, 1, byteData.Length);
-
-            Socket.AsyncSend(wrappedArray, (byteCount) => 
+            Socket.AsyncSend(DataFrame.Wrap(data), (byteCount) => 
             {
                 Log.Debug(byteCount + " bytes send to " + Socket.RemoteEndPoint);
             });
