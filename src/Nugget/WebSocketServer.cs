@@ -45,6 +45,11 @@ namespace Nugget
             SocketFactory.Register<TSocket>(path);
         }
 
+        public void RegisterHandler(Type handler, string path)
+        {
+            SocketFactory.Register(handler, path);
+        }
+
         /// <summary>
         /// Set the factory to use for the specified sub protocol
         /// </summary>

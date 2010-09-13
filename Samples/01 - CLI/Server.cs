@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Nugget;
 
-namespace CLI
+namespace ConsoleApp
 {
     class CLISocket : WebSocket
     {
