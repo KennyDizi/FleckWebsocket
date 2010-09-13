@@ -10,9 +10,6 @@ namespace ConsoleApp
     // The server side socket
     class ConsoleAppSocket : WebSocket
     {
-        // a list of connected sockets
-        public static List<ConsoleAppSocket> Connections = new List<ConsoleAppSocket>();
-
         // This method is called when data is comming from the client.
         // In this example the method is just empty
         public override void Incomming(string data)
@@ -24,14 +21,12 @@ namespace ConsoleApp
         public override void Disconnected()
         {
             Console.WriteLine("--- disconnected ---");
-            Connections.Remove(this);
         }
 
         // This method is called when the socket connects
         public override void Connected(ClientHandshake handshake)
         {
             Console.WriteLine("--- connected --- ");
-            Connections.Add(this);
         }
     }
     
@@ -62,9 +57,7 @@ namespace ConsoleApp
             var input = Console.ReadLine();
             while (input != "exit")
             {
-                foreach (var item in ConsoleAppSocket.Connections)
-                    item.Send(input);
-                
+                nugget.SendToAll(input);                
                 input = Console.ReadLine();
             }
 
