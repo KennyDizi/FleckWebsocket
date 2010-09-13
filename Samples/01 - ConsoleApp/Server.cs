@@ -37,7 +37,8 @@ namespace ConsoleApp
             Nugget.Log.Level = LogLevel.None;
             nugget.Start();
             
-            Console.WriteLine("Server started, open client.html in a websocket-enabled browser");
+            Console.WriteLine("Server started, open client.html in a websocket-enabled browser\n");
+            Console.WriteLine("Once the connection is established\nanything you type into this console, will be send to the browser");
 
 
             var input = Console.ReadLine();
