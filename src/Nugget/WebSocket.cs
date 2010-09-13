@@ -7,7 +7,7 @@ namespace Nugget
 {
     public abstract class WebSocket<T> : ASendingWebSocket, IWebSocket, IReceivingWebSocket<T>
     {
-        public abstract void Incomming(T data);
+        public abstract void Incoming(T data);
         public abstract void Disconnected();
         public abstract void Connected(ClientHandshake handshake);
 

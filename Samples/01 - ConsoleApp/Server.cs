@@ -12,7 +12,7 @@ namespace ConsoleApp
     {
         // This method is called when data is comming from the client.
         // In this example the method is just empty
-        public override void Incomming(string data)
+        public override void Incoming(string data)
         {
 
         }

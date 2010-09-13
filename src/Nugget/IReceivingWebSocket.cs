@@ -7,6 +7,6 @@ namespace Nugget
 {
     public interface IReceivingWebSocket<T>
     {
-        void Incomming(T data);
+        void Incoming(T data);
     }
 }
