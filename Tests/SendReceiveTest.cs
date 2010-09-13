@@ -47,7 +47,7 @@ namespace Nugget.Tests
             public static bool Passed = false;
             public static int Count = 500;
 
-            public override void Incomming(string data)
+            public override void Incoming(string data)
             {
                 Passed = (data.Length == Count);
             }
@@ -66,7 +66,7 @@ namespace Nugget.Tests
             public static bool Passed = false;
             public static int Count = 500;
 
-            public override void Incomming(string data)
+            public override void Incoming(string data)
             {
             }
 
@@ -83,7 +83,7 @@ namespace Nugget.Tests
 
         class EccoWithMe : WebSocket
         {
-            public override void Incomming(string data)
+            public override void Incoming(string data)
             {
                 Send(data);
             }

@@ -47,7 +47,7 @@ namespace Nugget.Tests
             public static bool DisconnectedCalled = false;
             public static bool ConnectedCalled = false;
 
-            public override void Incomming(string data)
+            public override void Incoming(string data)
             {
                 IncommingCalled = true;
             }
