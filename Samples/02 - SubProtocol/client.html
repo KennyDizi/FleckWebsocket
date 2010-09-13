@@ -5,10 +5,13 @@
         <script type="text/javascript">
             var ws;
             var start = function () {
+                // the "debug" element is used to display information
                 var debug = document.getElementById('debug');
                 debug.innerHTML += "connecting to server ..<br/>";
 
-                ws = new WebSocket('ws://localhost:8181/subsample', 'post'); // using the "post" subprotocol
+                // create a new websocket and connect
+                // not that the web socket uses the subprotocol "post"
+                ws = new WebSocket('ws://localhost:8181/subsample', 'post');
 
                 ws.onmessage = function (evt) {
                     debug.innerHTML += evt.data + '<br/>';
@@ -25,7 +28,7 @@
                 document.getElementById('submit_button').onclick = click;
             }
 
-
+            // when the submit button is clicked - do this
             var click = function () {
                 var name = document.getElementById('name').value;
                 var msg = document.getElementById('message').value;
@@ -38,10 +41,9 @@
         </script>
 	</head>
 	<body>
-    
-    <input type="text" name="name" id="name" value="name"/><br />
-    <input type="text" name="message" id="message" value="message" /><br />
-    <input type="submit" value="Send" id="submit_button" />
-    <pre id="debug"></pre>
+        <input type="text" name="name" id="name" value="name"/><br />
+        <input type="text" name="message" id="message" value="message" /><br />
+        <input type="submit" value="Send" id="submit_button" />
+        <pre id="debug"></pre>
 	</body>
 </html>
