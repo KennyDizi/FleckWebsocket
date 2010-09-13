@@ -12,7 +12,6 @@ namespace Nugget
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
         private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
-        private bool running = false;
 
         /// <summary>
         /// The socket that listens for conenctions
@@ -73,18 +72,6 @@ namespace Nugget
             ListenerSocket.Listen(100);
             Log.Info("Server stated on " + ListenerSocket.LocalEndPoint);
             ListenForClients();
-            running = true;
-
-            var keepalive = new Thread(new ThreadStart(() =>
-                {
-                    while (running)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }));
-
-            keepalive.Start();
-
         }
 
         private void ListenForClients()
@@ -139,13 +126,7 @@ namespace Nugget
 
         public void Dispose()
         {
-            Stop();
             ListenerSocket.Dispose();
-        }
-
-        public void Stop()
-        {
-            running = false;
         }
     }
 
