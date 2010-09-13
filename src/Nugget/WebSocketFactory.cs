@@ -33,6 +33,19 @@ namespace Nugget
             }
         }
 
+        public void Register(Type t, string path)
+        {
+            if (!types.ContainsKey(path))
+            {
+                types[path] = t;
+                container.RegisterType(t);
+            }
+            else
+            {
+                throw new Exception("Path: '" + path + "' has already been set");
+            }
+        }
+
         /// <summary>
         /// Instantiate a new client
         /// </summary>
