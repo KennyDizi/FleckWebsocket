@@ -25,15 +25,17 @@
                     debug.innerHTML += '.. connection closed<br/>';
                 }
 
-                document.getElementById('submit_button').onclick = click;
             }
 
-            // when the submit button is clicked - do this
-            var click = function () {
+            // when the button is clicked - do this
+            var clicks = function () {
+                // get the author and the message body
                 var name = document.getElementById('name').value;
                 var msg = document.getElementById('message').value;
+                // create a json string
                 var json = JSON.stringify({ author: name, body: msg });
                 debug.innerHTML += "sending " + json + "<br/>";
+                // send it
                 ws.send(json);
             }
 
@@ -41,9 +43,9 @@
         </script>
 	</head>
 	<body>
-        <input type="text" name="name" id="name" value="name"/><br />
-        <input type="text" name="message" id="message" value="message" /><br />
-        <input type="submit" value="Send" id="submit_button" />
+        <input type="text" name="name" id="name" placeholder="name"/><br />
+        <textarea id="message" cols="50" rows="5" placeholder="message"></textarea><br />
+        <input type="button" value="Send" id="submit_button" onclick="clicks()" />
         <pre id="debug"></pre>
 	</body>
 </html>

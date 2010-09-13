@@ -7,6 +7,31 @@ using JONSParser;
 
 namespace SubProtocol
 {
+
+    // the handler class
+    // note that the class inherits the generic interface and uses the model as the type parameter
+    class PostSocket : WebSocket<Post>
+    {
+        // this method is called when data is comming from the client
+        // note that the method takes a Post object instead of a string
+        // this is the object created in the model factory
+        public override void Incomming(Post post)
+        {
+            Console.WriteLine("{0} posted {1}", post.Author, post.Body);
+        }
+
+        public override void Disconnected()
+        {
+            Console.WriteLine("--- disconnected ---");
+        }
+
+        public override void Connected(ClientHandshake handshake)
+        {
+            Console.WriteLine("--- connected ---");
+        }
+    }
+
+
     // a "model" representing a post made by someone
     class Post
     {
@@ -50,29 +75,6 @@ namespace SubProtocol
                 return false;
             else
                 return p.IsValid();
-        }
-    }
-
-    // the handler class
-    // note that the class inherits the generic interface and uses the model as the type parameter
-    class PostSocket : WebSocket<Post>
-    {
-        // this method is called when data is comming from the client
-        // note that the method takes a Post object instead of a string
-        // this is the object created in the model factory
-        public override void Incomming(Post post)
-        {
-            Console.WriteLine("{0} posted {1}",post.Author,post.Body);
-        }
-
-        public override void Disconnected()
-        {
-            Console.WriteLine("--- disconnected ---");
-        }
-
-        public override void Connected(ClientHandshake handshake)
-        {
-            Console.WriteLine("--- connected ---");
         }
     }
 

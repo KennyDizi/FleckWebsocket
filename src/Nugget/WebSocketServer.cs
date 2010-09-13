@@ -12,6 +12,7 @@ namespace Nugget
     {
         private WebSocketFactory SocketFactory = new WebSocketFactory();
         private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
+        private List<WebSocketConnection> Connections = new List<WebSocketConnection>();
 
         /// <summary>
         /// The socket that listens for conenctions
@@ -115,6 +116,8 @@ namespace Nugget
                     // start receiving data
                     wsc.StartReceiving();
                     
+                    // store the connection
+                    Connections.Add(wsc);
                 }
             };
 
@@ -122,6 +125,18 @@ namespace Nugget
             
             // listen some more
             ListenForClients();
+        }
+
+        /// <summary>
+        /// Send a message to all the connection sockets
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendToAll(string message)
+        {
+            foreach (var c in Connections)
+            {
+                c.Send(message);
+            }
         }
 
         public void Dispose()
