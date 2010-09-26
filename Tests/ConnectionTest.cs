@@ -31,7 +31,7 @@ namespace Nugget.Tests
         public void Setup()
         {
             TestSocket.ConnectedCalled = false;
-            TestSocket.IncommingCalled = false;
+            TestSocket.IncomingCalled = false;
             TestSocket.DisconnectedCalled = false;
         }
 
@@ -43,13 +43,13 @@ namespace Nugget.Tests
 
         class TestSocket : WebSocket
         {
-            public static bool IncommingCalled = false;
+            public static bool IncomingCalled = false;
             public static bool DisconnectedCalled = false;
             public static bool ConnectedCalled = false;
 
             public override void Incoming(string data)
             {
-                IncommingCalled = true;
+                IncomingCalled = true;
             }
 
             public override void Disconnected()

@@ -94,7 +94,7 @@ namespace Nugget
                             if (model == null && Factory == null) // if the factory is null, use the raw string
                                 model = (object)data;
 
-                            WebSocket.Incomming(model);
+                            WebSocket.Incoming(model);
                         }
 
                         Receive();

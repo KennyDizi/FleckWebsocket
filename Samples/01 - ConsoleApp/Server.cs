@@ -37,7 +37,7 @@ namespace ConsoleApp
         {
             // create the server
             // the parameters describe where to listen for connections (the port) and which connections to accept (the origin and location)
-            // it is important that these are correct, or the server might not accept the incomming connections
+            // it is important that these are correct, or the server might not accept the incoming connections
             // see http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol, to learn more about these parameters
             var nugget = new WebSocketServer(8181, "null", "ws://localhost:8181");
 

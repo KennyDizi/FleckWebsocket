@@ -16,17 +16,17 @@ namespace Nugget
         {
             webSocket = ws;
 
-            // get all the methods with the name Incomming - the method defined on the IReceivingWebSocket<> interface
+            // get all the methods with the name Incoming - the method defined on the IReceivingWebSocket<> interface
             // the interface is generic and can be implemented with more than one type parameter (e.g. class C : I<string>, I<int>)
             // we need them all
-            var methods = webSocket.GetType().GetMethods().Where(x => x.Name == "Incomming");
+            var methods = webSocket.GetType().GetMethods().Where(x => x.Name == "Incoming");
             
             // save the methods in a dictionary to make it simpler to find the methods
             methodMap = methods.ToDictionary(x => x.GetParameters().First().ParameterType);
         }
 
         // finds the right method on the enclosed websocket, based on the type of the model (the object created by the factory)
-        public void Incomming(object model)
+        public void Incoming(object model)
         {
             if (model == null)
             {
@@ -54,12 +54,12 @@ namespace Nugget
             }
 
             // look for the method that takes an argument of the type of the model
-            // e.g. void Incomming(string model) - if the model is of the type string
+            // e.g. void Incoming(string model) - if the model is of the type string
             var match = methodMap.SingleOrDefault(x => x.Key == model.GetType()).Value;
             
             // look for the methods that takes an argument of the type that the model is derived from
-            // e.g. void Incomming(I model) - if model implements 'I'
-            //   or void Incomming(C model) - if model is a subclass of 'C'
+            // e.g. void Incoming(I model) - if model implements 'I'
+            //   or void Incoming(C model) - if model is a subclass of 'C'
             var subMatches = methodMap.Where(x => model.GetType().IsSubclassOf(x.Key) || 
                                                   model.GetType().GetInterfaces().Contains(x.Key))
                                       .Select(x => x.Value);
@@ -71,7 +71,7 @@ namespace Nugget
                 try { match.Invoke(webSocket, new object[] { model });}
                 catch (Exception e)
                 {
-                    Log.Error("exception thrown in " + webSocket.GetType().Name + ".Incomming: " + e.Message);
+                    Log.Error("exception thrown in " + webSocket.GetType().Name + ".Incoming: " + e.Message);
                 }
             }
             else
@@ -83,7 +83,7 @@ namespace Nugget
                     try { subMatches.First().Invoke(webSocket, new object[] { model }); }
                     catch (Exception e)
                     {
-                        Log.Error("exception thrown in " + webSocket.GetType().Name + ".Incomming: " + e.Message);
+                        Log.Error("exception thrown in " + webSocket.GetType().Name + ".Incoming: " + e.Message);
                     }
                     
                     // if we have more than one match
