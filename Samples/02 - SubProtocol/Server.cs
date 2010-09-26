@@ -15,7 +15,7 @@ namespace SubProtocol
         // this method is called when data is comming from the client
         // note that the method takes a Post object instead of a string
         // this is the object created in the model factory
-        public override void Incomming(Post post)
+        public override void Incoming(Post post)
         {
             Console.WriteLine("{0} posted {1}", post.Author, post.Body);
         }
@@ -56,7 +56,7 @@ namespace SubProtocol
         {
             // parse the data (we assume that the data string is on json format)
             var js = JSON.Parse(data);
-            if (js.hasOwnProperty("author") && js.hasOwnProperty("body"))
+            if (js != null && js.hasOwnProperty("author") && js.hasOwnProperty("body"))
             {
                 // create a new model using the data from the client
                 // "return" passes the model on to the handler class
