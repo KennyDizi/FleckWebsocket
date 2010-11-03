@@ -51,6 +51,10 @@
     <Content Include="client.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Nugget.Server\Nugget.Server.csproj">
+      <Project>{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}</Project>
+      <Name>Nugget.Server</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Nugget\Nugget.csproj">
       <Project>{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}</Project>
       <Name>Nugget</Name>
