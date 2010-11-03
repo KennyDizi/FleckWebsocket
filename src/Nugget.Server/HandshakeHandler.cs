@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Web;
 
 
-namespace Nugget
+namespace Nugget.Server
 {
     /// <summary>
     /// Handles the handshaking between the client and the host, when a new connection is created

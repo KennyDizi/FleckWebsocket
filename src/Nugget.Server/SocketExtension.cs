@@ -4,30 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 
-namespace Nugget
+namespace Nugget.Server
 {
     public static class SocketExtension
     {
         // class that wraps the two different kinds of callbacks (with or without state object)
         class Callback
         {
-            Action<int> cb;
-            Action<int, object> cbWithState;
+            private Action<int> _cb;
+            private Action<int, object> _cbWithState;
+            
             public Callback(Action<int> callback)
             {
-                cb = callback;
+                _cb = callback;
             }
 
             public Callback(Action<int,object> callback)
             {
-                cbWithState = callback;
+                _cbWithState = callback;
             }
 
             public IAsyncResult BeginInvoke(int arg, AsyncCallback callback, object obj)
             {
-                if (cb != null)
+                if (_cb != null)
                 {
-                    return cb.BeginInvoke(arg, callback, obj);
+                    return _cb.BeginInvoke(arg, callback, obj);
                 }
                 else
                 {
@@ -37,9 +38,9 @@ namespace Nugget
 
             public IAsyncResult BeginInvoke(int arg, object state, AsyncCallback callback, object obj)
             {
-                if (cbWithState != null)
+                if (_cbWithState != null)
                 {
-                    return cbWithState.BeginInvoke(arg, state, callback, obj);
+                    return _cbWithState.BeginInvoke(arg, state, callback, obj);
                 }
                 else
                 {
@@ -50,13 +51,13 @@ namespace Nugget
 
             public void EndInvoke(IAsyncResult ar)
             {
-                if (cb != null)
+                if (_cb != null)
                 {
-                    cb.EndInvoke(ar);
+                    _cb.EndInvoke(ar);
                 }
                 else
                 {
-                    cbWithState.EndInvoke(ar);
+                    _cbWithState.EndInvoke(ar);
                 }
             }
         }

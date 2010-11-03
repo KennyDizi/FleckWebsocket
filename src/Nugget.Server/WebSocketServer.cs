@@ -6,14 +6,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace Nugget
+namespace Nugget.Server
 {
     public class WebSocketServer : IDisposable
     {
-        private WebSocketFactory SocketFactory = new WebSocketFactory();
-        private SubProtocolModelFactoryStore ModelFactories = new SubProtocolModelFactoryStore();
-        private List<WebSocketConnection> Connections = new List<WebSocketConnection>();
-
         /// <summary>
         /// The socket that listens for conenctions
         /// </summary>
@@ -33,32 +29,6 @@ namespace Nugget
             Port = port;
             Origin = origin;
             Location = location;
-        }
-
-        /// <summary>
-        /// Register a class to handle a connection comming from the web sockets
-        /// </summary>
-        /// <typeparam name="TSocket">the class to handle the connection, a new object of this class is instantiated for every new connection</typeparam>
-        /// <param name="path">the path the class should respond to</param>
-        public void RegisterHandler<TSocket>(string path) where TSocket : IWebSocket
-        {
-            SocketFactory.Register<TSocket>(path);
-        }
-
-        public void RegisterHandler(Type handler, string path)
-        {
-            SocketFactory.Register(handler, path);
-        }
-
-        /// <summary>
-        /// Set the factory to use for the specified sub protocol
-        /// </summary>
-        /// <typeparam name="TModel">The type of the model that the factory creates</typeparam>
-        /// <param name="factory">An instance of the factory class</param>
-        /// <param name="subprotocol">the sub protocol that this factory should be used for</param>
-        public void SetSubProtocolModelFactory<TModel>(ISubProtocolModelFactory<TModel> factory, string subprotocol)
-        {
-            ModelFactories.Store(factory, subprotocol);
         }
 
         /// <summary>
@@ -99,26 +69,8 @@ namespace Nugget
             var shaker = new HandshakeHandler(Origin, Location);
             shaker.OnSuccess = (handshake) =>
             {
-                // create the web socket object based on the path requested
-                var wsc = SocketFactory.Create(handshake.ResourcePath);
-                if (wsc != null)
-                {
-                    wsc.Socket = clientSocket;
-
-                    if (handshake.SubProtocol != null)
-                    {
-                        wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
-                    }
-
-                    // let the web socket know that it is connected
-                    wsc.WebSocket.Connected(handshake);
-
-                    // start receiving data
-                    wsc.StartReceiving();
-                    
-                    // store the connection
-                    Connections.Add(wsc);
-                }
+                var wsc = new WebSocketConnection(clientSocket, handshake, OnClientData, OnClientDisconnect);
+                wsc.StartReceiving();
             };
 
             shaker.Shake(clientSocket);
@@ -127,16 +79,15 @@ namespace Nugget
             ListenForClients();
         }
 
-        /// <summary>
-        /// Send a message to all the connection sockets
-        /// </summary>
-        /// <param name="message"></param>
-        public void SendToAll(string message)
+        private void OnClientData(WebSocketConnection wsc, string data)
         {
-            foreach (var c in Connections)
-            {
-                c.Send(message);
-            }
+            Log.Info("incomming data: " + data);
+        }
+
+        private void OnClientDisconnect(WebSocketConnection wsc)
+        {
+            Log.Info("client disconnected");
+            wsc.Socket.Dispose();
         }
 
         public void Dispose()
