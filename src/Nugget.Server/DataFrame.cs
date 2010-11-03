@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nugget
+namespace Nugget.Server
 {
     public class DataFrame
     {
@@ -11,13 +11,13 @@ namespace Nugget
         public const byte Start = 0;
         public const byte End = 255;
 
-        private StringBuilder builder;
+        private StringBuilder _builder;
         public bool IsComplete { get; set; }
 
         public DataFrame() 
         {
             IsComplete = false;
-            builder = new StringBuilder();
+            _builder = new StringBuilder();
         }
 
         public static byte[] Wrap(string data)
@@ -55,15 +55,15 @@ namespace Nugget
                 }
             }
 
-            builder.Append(Encoding.UTF8.GetString(data, start, (end - start) + 1));
+            _builder.Append(Encoding.UTF8.GetString(data, start, (end - start) + 1));
 
             IsComplete = endIsInThisBuffer;
         }
 
         public override string ToString()
         {
-            if (builder != null)
-                return builder.ToString();
+            if (_builder != null)
+                return _builder.ToString();
             else
                 return "";
         }

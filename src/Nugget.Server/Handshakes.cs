@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Web;
 
-namespace Nugget
+namespace Nugget.Server
 {
     public class ClientHandshake
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Nugget
+namespace Nugget.Server
 {
     [Flags]
     public enum LogLevel 
