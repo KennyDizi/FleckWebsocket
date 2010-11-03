@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Net;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace Nugget.Server
 {
+    public delegate void ConnectedEventHandler(WebSocketConnection wsc);
+    public delegate void ReceiveEventHandler(WebSocketConnection wsc, string data);
+    public delegate void DisconnectedEventHandler(WebSocketConnection wsc);
+
     public class WebSocketServer : IDisposable
     {
         /// <summary>
@@ -17,6 +17,10 @@ namespace Nugget.Server
         public string Location { get; private set; }
         public int Port { get; private set; }
         public string Origin { get; private set; }
+
+        public event ConnectedEventHandler OnConnect;
+        public event ReceiveEventHandler OnReceive;
+        public event DisconnectedEventHandler OnDisconnect;
 
         /// <summary>
         /// Instantiate a new web socket server
@@ -70,6 +74,7 @@ namespace Nugget.Server
             shaker.OnSuccess = (handshake) =>
             {
                 var wsc = new WebSocketConnection(clientSocket, handshake, OnClientData, OnClientDisconnect);
+                OnConnect(wsc);
                 wsc.StartReceiving();
             };
 
@@ -82,11 +87,13 @@ namespace Nugget.Server
         private void OnClientData(WebSocketConnection wsc, string data)
         {
             Log.Info("incomming data: " + data);
+            OnReceive(wsc, data);
         }
 
         private void OnClientDisconnect(WebSocketConnection wsc)
         {
             Log.Info("client disconnected");
+            OnDisconnect(wsc);
             wsc.Socket.Dispose();
         }
 
