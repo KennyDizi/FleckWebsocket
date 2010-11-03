@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>55ea9f1f-a6bc-4e86-9238-f5dfebd1209d</ProjectGuid>
+    <ProjectGuid>{52BA79D3-3C09-438F-9CDE-2E4E84A22471}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nugget.Framework</RootNamespace>
@@ -40,8 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="ASendingWebSocket.cs" />
+    <Compile Include="IReceivingWebSocket.cs" />
+    <Compile Include="ISubProtocolModelFactory.cs" />
+    <Compile Include="IWebSocket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubProtocolModelFactoryStore.cs" />
+    <Compile Include="SubProtocolModelFactoryWrapper.cs" />
+    <Compile Include="WebSocket.cs" />
+    <Compile Include="WebSocketFactory.cs" />
+    <Compile Include="WebSocketWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
