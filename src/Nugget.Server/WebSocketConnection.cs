@@ -54,6 +54,10 @@ namespace Nugget.Server
             Handshake = handshake;
         }
 
+        /// <summary>
+        /// Asynchronously send data to the client
+        /// </summary>
+        /// <param name="data">the data to send</param>
         public void Send(string data)
         {
             if (Socket.Connected)
@@ -70,6 +74,7 @@ namespace Nugget.Server
             }
 
         }
+
 
         public void StartReceiving(DataFrame frame = null)
         {

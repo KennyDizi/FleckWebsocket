@@ -69,18 +69,21 @@ namespace Nugget.Server
                 return;
             }
             
-
             var shaker = new HandshakeHandler(Origin, Location);
-            shaker.OnSuccess = (handshake) =>
+            // shake hands - and provide a callback for when hands has been shaken
+            shaker.Shake(clientSocket, (handshake) =>
             {
+                // instantiate the connection and subscribe to the events
                 var wsc = new WebSocketConnection(clientSocket, handshake);
                 wsc.OnDisconnect += new DisconnectedEventHandler(OnClientDisconnect);
                 wsc.OnReceive += new ReceiveEventHandler(OnClientData);
+                
+                // fire the connected event
                 OnConnect(wsc);
-                wsc.StartReceiving();
-            };
 
-            shaker.Shake(clientSocket);
+                // start looking for data
+                wsc.StartReceiving();
+            });
             
             // listen some more
             ListenForClients();

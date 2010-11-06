@@ -41,8 +41,9 @@ namespace Nugget.Server
         /// </summary>
         /// <param name="socket">The socket to send the handshake to</param>
         /// <param name="callback">a callback function that is called when the send has completed</param>
-        public void Shake(Socket socket)
+        public void Shake(Socket socket, Action<ClientHandshake> callback)
         {
+            OnSuccess = callback;
             try
             {
                 // create the state object, and save the relavent information.
