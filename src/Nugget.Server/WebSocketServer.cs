@@ -4,9 +4,11 @@ using System.Net;
 
 namespace Nugget.Server
 {
+    /// <summary>
+    /// Called when a new client is connected
+    /// </summary>
+    /// <param name="wsc">the connectino representing the connection</param>
     public delegate void ConnectedEventHandler(WebSocketConnection wsc);
-    public delegate void ReceiveEventHandler(WebSocketConnection wsc, string data);
-    public delegate void DisconnectedEventHandler(WebSocketConnection wsc);
 
     public class WebSocketServer : IDisposable
     {
@@ -19,8 +21,6 @@ namespace Nugget.Server
         public string Origin { get; private set; }
 
         public event ConnectedEventHandler OnConnect;
-        public event ReceiveEventHandler OnReceive;
-        public event DisconnectedEventHandler OnDisconnect;
 
         /// <summary>
         /// Instantiate a new web socket server
@@ -73,7 +73,9 @@ namespace Nugget.Server
             var shaker = new HandshakeHandler(Origin, Location);
             shaker.OnSuccess = (handshake) =>
             {
-                var wsc = new WebSocketConnection(clientSocket, handshake, OnClientData, OnClientDisconnect);
+                var wsc = new WebSocketConnection(clientSocket, handshake);
+                wsc.OnDisconnect += new DisconnectedEventHandler(OnClientDisconnect);
+                wsc.OnReceive += new ReceiveEventHandler(OnClientData);
                 OnConnect(wsc);
                 wsc.StartReceiving();
             };
@@ -84,17 +86,15 @@ namespace Nugget.Server
             ListenForClients();
         }
 
+        void OnClientDisconnect(WebSocketConnection wsc)
+        {
+            Log.Info("client disconnected");
+            wsc.Socket.Dispose();
+        }
+
         private void OnClientData(WebSocketConnection wsc, string data)
         {
             Log.Info("incomming data: " + data);
-            OnReceive(wsc, data);
-        }
-
-        private void OnClientDisconnect(WebSocketConnection wsc)
-        {
-            Log.Info("client disconnected");
-            OnDisconnect(wsc);
-            wsc.Socket.Dispose();
         }
 
         public void Dispose()

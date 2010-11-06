@@ -6,24 +6,52 @@ using System.Net.Sockets;
 
 namespace Nugget.Server
 {
+    /// <summary>
+    /// Called when a client receives data
+    /// </summary>
+    /// <param name="wsc">the connection representing the client receiving the data</param>
+    /// <param name="data">the data received</param>
+    public delegate void ReceiveEventHandler(WebSocketConnection wsc, string data);
+    
+    /// <summary>
+    /// Called when the client disconnects
+    /// </summary>
+    /// <param name="wsc">the connection representing the client disconnecting</param>
+    public delegate void DisconnectedEventHandler(WebSocketConnection wsc);
 
+    /// <summary>
+    /// Class representing a connection to a client
+    /// </summary>
     public class WebSocketConnection
     {
+
+        public event ReceiveEventHandler OnReceive;
+        public event DisconnectedEventHandler OnDisconnect;
+
+        /// <summary>
+        /// The socket connected to the client
+        /// </summary>
         public Socket Socket { get; private set; }
-        public ClientHandshake Handshake { get; private set; }
         
-        private Action<WebSocketConnection, string> _receiveCallback;
-        private Action<WebSocketConnection> _disconnectCallback;
+        /// <summary>
+        /// The handshake sent from the client upon connection
+        /// </summary>
+        public ClientHandshake Handshake { get; private set; }
 
+        /// <summary>
+        /// The size of the buffer used when data is sent or received
+        /// </summary>
         public const int BufferSize = 256;
-
-        public WebSocketConnection(Socket socket, ClientHandshake handshake, Action<WebSocketConnection, string> receiveCallback, Action<WebSocketConnection> disconnectCallback)
+        
+        /// <summary>
+        /// Create a new web socket connection
+        /// </summary>
+        /// <param name="socket">the connecting socket</param>
+        /// <param name="handshake">the handshake sent upon connecting</param>
+        public WebSocketConnection(Socket socket, ClientHandshake handshake)
         {
             Socket = socket;
             Handshake = handshake;
-
-            _receiveCallback = receiveCallback;
-            _disconnectCallback = disconnectCallback;
         }
 
         public void Send(string data)
@@ -37,6 +65,7 @@ namespace Nugget.Server
             }
             else
             {
+                OnDisconnect(this);
                 Socket.Close();
             }
 
@@ -65,7 +94,7 @@ namespace Nugget.Server
                     {
                         var data = dataframe.ToString();
 
-                        _receiveCallback(this, data);
+                        OnReceive(this, data);
 
                         StartReceiving(); // start looking again
                     }
@@ -76,7 +105,7 @@ namespace Nugget.Server
                 }
                 else // no data - the socket must be closed
                 {
-                    _disconnectCallback(this);
+                    OnDisconnect(this);
                 }
             });
         }
