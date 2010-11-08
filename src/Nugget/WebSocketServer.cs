@@ -107,7 +107,9 @@ namespace Nugget
 
                     if (handshake.SubProtocol != null)
                     {
-                        wsc.SetModelFactory(ModelFactories.Get(handshake.SubProtocol));
+                        var factory = ModelFactories.Get(handshake.SubProtocol);
+                        if(factory != null)
+                            wsc.SetModelFactory(factory);
                     }
 
                     // let the web socket know that it is connected
