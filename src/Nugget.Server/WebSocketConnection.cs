@@ -72,7 +72,6 @@ namespace Nugget.Server
                 OnDisconnect(this);
                 Socket.Close();
             }
-
         }
 
 
