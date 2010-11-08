@@ -17,7 +17,14 @@ namespace Nugget
 
         public object Get(string subprotocol)
         {
-            return instances[subprotocol];
+            if (instances.Keys.Contains(subprotocol))
+            {
+                return instances[subprotocol];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
