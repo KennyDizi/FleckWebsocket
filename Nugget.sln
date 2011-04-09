@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nugget.Framework", "src\Nug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01 - Hello World", "Samples\01 - Hello World\01 - Hello World.csproj", "{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02 - Chat", "Samples\02 - Chat\02 - Chat.csproj", "{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Nugget.vsmdi
@@ -52,11 +54,22 @@ Global
 		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Mixed Platforms.Build.0 = Release|x86
 		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.ActiveCfg = Release|x86
 		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.Build.0 = Release|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Debug|x86.ActiveCfg = Debug|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Debug|x86.Build.0 = Debug|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Release|Any CPU.ActiveCfg = Release|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Release|Mixed Platforms.Build.0 = Release|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Release|x86.ActiveCfg = Release|x86
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC} = {BDA01C02-E4AC-42BA-898A-ED4752F676EF}
+		{91DC23DD-1AAC-41A5-9DB8-201FDB73F688} = {BDA01C02-E4AC-42BA-898A-ED4752F676EF}
 	EndGlobalSection
 EndGlobal
