@@ -40,18 +40,8 @@ namespace Nugget.Server
         {
             Origin = origin;
             Location = location;
-            var arr = location.Split(':')[1];
-            // the port is supposed to be included in the location
-            int port;
-            if (location.Split(':').Length >= 3 && Int32.TryParse(location.Split(':')[2], out port))
-            {
-                Port = port;
-                ConnectedClients = new List<WebSocketConnection>();
-            }
-            else
-            {
-                throw new ArgumentException("The location passed does not specify a port");
-            }
+            Port = new Uri(location).Port;
+            ConnectedClients = new List<WebSocketConnection>();
         }
 
         /// <summary>
