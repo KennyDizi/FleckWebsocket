@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{BDA01C02-E4AC-42BA-898A-ED4752F676EF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{21250CBF-9E02-4079-A33E-EC6309A2B81F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01 - ConsoleApp", "Samples\01 - ConsoleApp\01 - ConsoleApp.csproj", "{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nugget.Server", "src\Nugget.Server\Nugget.Server.csproj", "{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nugget.Framework", "src\Nugget.Framework\Nugget.Framework.csproj", "{52BA79D3-3C09-438F-9CDE-2E4E84A22471}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01 - Hello World", "Samples\01 - Hello World\01 - Hello World.csproj", "{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -24,17 +22,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Any CPU.Build.0 = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|x86.ActiveCfg = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|x86.Build.0 = Debug|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Any CPU.ActiveCfg = Release|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Mixed Platforms.Build.0 = Release|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.ActiveCfg = Release|x86
-		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.Build.0 = Release|x86
 		{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -55,6 +42,16 @@ Global
 		{52BA79D3-3C09-438F-9CDE-2E4E84A22471}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{52BA79D3-3C09-438F-9CDE-2E4E84A22471}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{52BA79D3-3C09-438F-9CDE-2E4E84A22471}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|x86.ActiveCfg = Debug|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Debug|x86.Build.0 = Debug|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Any CPU.ActiveCfg = Release|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|Mixed Platforms.Build.0 = Release|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.ActiveCfg = Release|x86
+		{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
