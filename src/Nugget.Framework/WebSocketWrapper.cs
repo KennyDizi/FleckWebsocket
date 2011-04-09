@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Nugget.Server;
 
 namespace Nugget
 {
@@ -43,7 +44,7 @@ namespace Nugget
                     if (matches.Count() > 1)
                     {
                         // log it
-                        Log.Warn(
+                        Nugget.Server.Log.Warn(
                             String.Format("more than one matching method found for empty(null) model on {0} ({1} called)",
                                 webSocket.GetType().Name, 
                                 matches.First().Value.ToString())

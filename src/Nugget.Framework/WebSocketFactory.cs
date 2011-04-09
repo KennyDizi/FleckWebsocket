@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
-using Microsoft.Practices.Unity;
 
 namespace Nugget
 {
@@ -13,7 +12,6 @@ namespace Nugget
     class WebSocketFactory
     {
         private Dictionary<string, Type> types = new Dictionary<string, Type>();
-        private UnityContainer container = new UnityContainer();
         
         /// <summary>
         /// Register a new web socket client
@@ -25,7 +23,6 @@ namespace Nugget
             if (!types.ContainsKey(path))
             {
                 types[path] = typeof(T);
-                container.RegisterType<T>();
             }
             else
             {
@@ -33,19 +30,22 @@ namespace Nugget
             }
         }
 
+        /*
         public void Register(Type t, string path)
         {
             if (!types.ContainsKey(path))
             {
                 types[path] = t;
-                container.RegisterType(t);
             }
             else
             {
                 throw new Exception("Path: '" + path + "' has already been set");
             }
         }
+         */
 
+
+        /*
         /// <summary>
         /// Instantiate a new client
         /// </summary>
@@ -74,5 +74,6 @@ namespace Nugget
                 return null;
             }
         }
+        */
     }
 }

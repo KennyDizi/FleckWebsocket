@@ -119,6 +119,11 @@ namespace Nugget.Server
                 var name = fields["field_name"].Captures[i].ToString();
                 var value = fields["field_value"].Captures[i].ToString();
 
+                if (value == "") //discussion:244004
+                {
+                    continue;
+                }
+
                 switch (name.ToLower())
                 {
                     case "sec-websocket-key1":
@@ -210,7 +215,15 @@ namespace Nugget.Server
 
             if (OnSuccess != null)
             {
-                OnSuccess(ClientHandshake);
+                try
+                {
+                    OnSuccess(ClientHandshake);
+                }
+                catch (Exception e)
+                {
+                    Log.Debug(e.ToString());
+                }
+                
             }
         }
         
