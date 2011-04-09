@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Net;
+using System.Collections.Generic;
 
 namespace Nugget.Server
 {
@@ -20,19 +21,37 @@ namespace Nugget.Server
         public int Port { get; private set; }
         public string Origin { get; private set; }
 
+        /// <summary>
+        /// A list of the currently connected clients
+        /// </summary>
+        public List<WebSocketConnection> ConnectedClients { get; set; }
+
+        /// <summary>
+        /// Event that is fired when a new client connects
+        /// </summary>
         public event ConnectedEventHandler OnConnect;
 
         /// <summary>
         /// Instantiate a new web socket server
         /// </summary>
-        /// <param name="port">the port to run on/listen to</param>
-        /// <param name="origin">the url where connections are allowed to come from (e.g. http://localhost)</param>
-        /// <param name="location">the url of this web socket server (e.g. ws://localhost:8181)</param>
-        public WebSocketServer(int port, string origin, string location)
+        /// <param name="location">the address and port of this web socket server (e.g. ws://localhost:8181)</param>
+        /// <param name="origin">the address from where connections are allowed to come (e.g. http://localhost)</param>
+        public WebSocketServer(string location, string origin)
         {
-            Port = port;
             Origin = origin;
             Location = location;
+            var arr = location.Split(':')[1];
+            // the port is supposed to be included in the location
+            int port;
+            if (location.Split(':').Length >= 3 && Int32.TryParse(location.Split(':')[2], out port))
+            {
+                Port = port;
+                ConnectedClients = new List<WebSocketConnection>();
+            }
+            else
+            {
+                throw new ArgumentException("The location passed does not specify a port");
+            }
         }
 
         /// <summary>
@@ -78,8 +97,14 @@ namespace Nugget.Server
                 wsc.OnDisconnect += new DisconnectedEventHandler(OnClientDisconnect);
                 wsc.OnReceive += new ReceiveEventHandler(OnClientData);
                 
+                // add the new client to the list
+                ConnectedClients.Add(wsc);
+                
                 // fire the connected event
-                OnConnect(wsc);
+                if (OnConnect != null)
+                {
+                    OnConnect(wsc);
+                }
 
                 // start looking for data
                 wsc.StartReceiving();
@@ -89,9 +114,10 @@ namespace Nugget.Server
             ListenForClients();
         }
 
-        void OnClientDisconnect(WebSocketConnection wsc)
+        private void OnClientDisconnect(WebSocketConnection wsc)
         {
             Log.Info("client disconnected");
+            ConnectedClients.Remove(wsc);
             wsc.Socket.Dispose();
         }
 
@@ -103,6 +129,18 @@ namespace Nugget.Server
         public void Dispose()
         {
             ListenerSocket.Dispose();
+        }
+
+        /// <summary>
+        /// Send a message to all the connected clients
+        /// </summary>
+        /// <param name="msg">the message to send</param>
+        public void SendToAll(string msg)
+        {
+            foreach (var client in ConnectedClients)
+            {
+                client.Send(msg);
+            }
         }
     }
 

@@ -49,7 +49,12 @@
     <Compile Include="SubProtocolModelFactoryWrapper.cs" />
     <Compile Include="WebSocket.cs" />
     <Compile Include="WebSocketFactory.cs" />
-    <Compile Include="WebSocketWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nugget.Server\Nugget.Server.csproj">
+      <Project>{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}</Project>
+      <Name>Nugget.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
