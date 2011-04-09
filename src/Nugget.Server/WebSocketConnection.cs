@@ -41,7 +41,7 @@ namespace Nugget.Server
         /// <summary>
         /// The size of the buffer used when data is sent or received
         /// </summary>
-        public const int BufferSize = 256;
+        public const int BufferSize = 512;
         
         /// <summary>
         /// Create a new web socket connection

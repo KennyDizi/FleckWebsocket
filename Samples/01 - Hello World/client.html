@@ -1,13 +1,13 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 	<head>
-		<title>websocket client</title>
+		<title>nugget sample 1: hello world</title>
 	</head>
 	<body>
 	    <pre id="incomming"></pre>
         <script type="text/javascript">
             var inc = document.getElementById('incomming');
-            inc.innerHTML += "connecting to server ..";
+            inc.innerHTML += "connecting to server... ";
 
             // create a new websocket and connect
             var ws = new WebSocket('ws://localhost:8181');
@@ -19,12 +19,12 @@
 
             // when the connection is established, this method is called
             ws.onopen = function () {
-                inc.innerHTML += '.. connection open<br/>';
+                inc.innerHTML += 'connection open<br/>';
             };
 
             // when the connection is closed, this method is called
             ws.onclose = function () {
-                inc.innerHTML += '.. connection closed<br/>';
+                inc.innerHTML += '<br/>connection closed<br/>';
             }
         </script>
 	</body>

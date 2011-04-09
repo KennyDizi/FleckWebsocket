@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nugget.Server
 {
@@ -108,7 +109,6 @@ namespace Nugget.Server
         {
             Log.Info("client disconnected");
             ConnectedClients.Remove(wsc);
-            wsc.Socket.Dispose();
         }
 
         private void OnClientData(WebSocketConnection wsc, string data)
@@ -128,6 +128,19 @@ namespace Nugget.Server
         public void SendToAll(string msg)
         {
             foreach (var client in ConnectedClients)
+            {
+                client.Send(msg);
+            }
+        }
+
+        /// <summary>
+        /// Send a message to all the connected clients, excluding one.
+        /// </summary>
+        /// <param name="msg">the message to send</param>
+        /// <param name="exclude">the connection to exclude</param>
+        public void SendToAll(string msg, WebSocketConnection exclude)
+        {
+            foreach (var client in ConnectedClients.Where(x => !x.Equals(exclude)))
             {
                 client.Send(msg);
             }
