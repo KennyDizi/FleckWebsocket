@@ -16,26 +16,22 @@
         </div>
 
         <script type="text/javascript">
-            var appendToChat = function (msg) {
-                $('#chat-window').append(msg+'<br/>');
-            }
-
             $('#connection-status').append("connecting.....");
             var ws = new WebSocket('ws://localhost:8181');
 
-            ws.onmessage = function (evt) {
-                var date = new Date(evt.timeStamp);
-                var formattedTime = date.getHours() + ':' + date.getMinutes();
-                appendToChat('(' + formattedTime + ') ' + evt.data);
-            };
+                ws.onmessage = function (evt) {
+                    var date = new Date(evt.timeStamp);
+                    var formattedTime = date.getHours() + ':' + date.getMinutes();
+                    $('#chat-window').append('(' + formattedTime + ') ' + evt.data + '<br/>');
+                };
             
-            ws.onopen = function () {
-                $('#connection-status').html('connected!');
-            };
+                ws.onopen = function () {
+                    $('#connection-status').html('connected!');
+                };
             
-            ws.onclose = function () {
-                $('#connection-status').html('not connected');
-            }
+                ws.onclose = function () {
+                    $('#connection-status').html('not connected');
+                }
 
             $('#send').click(function () {
                 ws.send($('#chat-msg').val());

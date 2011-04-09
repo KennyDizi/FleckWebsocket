@@ -16,7 +16,7 @@ namespace Chat
             nugget.OnConnect += (wsc) =>
             {
                 wsc.Send("[server] Welcome to the chat");
-                nugget.SendToAll(String.Format("[server] {0} connected", wsc.Socket.RemoteEndPoint), wsc);
+                nugget.SendToAll(String.Format("[server] {0} connected", wsc.Socket.RemoteEndPoint), exclude: wsc);
                 Console.WriteLine("new connection from {0}", wsc.Socket.RemoteEndPoint);
                 
                 wsc.OnReceive += (sender, data) =>
@@ -26,7 +26,7 @@ namespace Chat
 
                 wsc.OnDisconnect += (connection) =>
                 {
-                    nugget.SendToAll(String.Format("[server] {0} disconnected", connection.Socket.RemoteEndPoint), connection);
+                    nugget.SendToAll(String.Format("[server] {0} disconnected", connection.Socket.RemoteEndPoint), exclude: connection);
                 };
 
             };
