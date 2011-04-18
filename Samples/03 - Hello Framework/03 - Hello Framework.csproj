@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3D7680B4-0224-4F0C-B1F6-74FB7586EBDC}</ProjectGuid>
+    <ProjectGuid>{33C5F8B1-A7D3-4FE4-9AC0-352C2DF95A15}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nugget.Samples.HelloWorld</RootNamespace>
-    <AssemblyName>HelloWorld</AssemblyName>
+    <RootNamespace>Nugget.Samples.HelloFramework</RootNamespace>
+    <AssemblyName>HelloFramework</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -34,9 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>ConsoleApp.Server</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,17 +44,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="client.html" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nugget.Framework\Nugget.Framework.csproj">
+      <Project>{52BA79D3-3C09-438F-9CDE-2E4E84A22471}</Project>
+      <Name>Nugget.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Nugget.Server\Nugget.Server.csproj">
       <Project>{AB7A8332-99F0-44B1-8231-9ECE8BFBE2B3}</Project>
       <Name>Nugget.Server</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="client.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using Nugget.Server;
 
-namespace Nugget
+namespace Nugget.Framework
 {
     public interface IWebSocket
     {
-        void Disconnected();
         void Connected(ClientHandshake handshake);
+        void Disconnected();
+        void Incoming(string data);
     }
 }
