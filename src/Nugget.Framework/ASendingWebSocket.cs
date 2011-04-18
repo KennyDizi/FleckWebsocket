@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using Nugget.Server;
 
-namespace Nugget
+namespace Nugget.Framework
 {
     public abstract class ASendingWebSocket
     {
-        public WebSocketConnection Connection { get; set; }
+        public WebSocketConnection Connection { get; internal set; }
         /// <summary>
         /// Send data to the client socket
         /// </summary>

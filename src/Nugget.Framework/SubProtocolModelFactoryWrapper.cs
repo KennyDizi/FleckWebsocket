@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Nugget.Server;
 
-namespace Nugget
+namespace Nugget.Framework
 {
     public class SubProtocolModelFactoryWrapper
     {

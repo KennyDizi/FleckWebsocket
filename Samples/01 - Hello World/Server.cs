@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Nugget.Server;
 
-namespace Chat
+namespace Nugget.Samples.HelloWorld
 {
     class Server
     {

@@ -8,8 +8,8 @@
     <ProjectGuid>{91DC23DD-1AAC-41A5-9DB8-201FDB73F688}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>_02___Chat</RootNamespace>
-    <AssemblyName>02 - Chat</AssemblyName>
+    <RootNamespace>Nugget.Samples.Chat</RootNamespace>
+    <AssemblyName>Chat</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -50,7 +50,6 @@
   <ItemGroup>
     <Content Include="client.html" />
     <Content Include="jquery-1.5.2.min.js" />
-    <Content Include="style.css" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Nugget.Server\Nugget.Server.csproj">

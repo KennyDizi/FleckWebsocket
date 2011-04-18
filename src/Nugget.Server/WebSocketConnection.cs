@@ -75,7 +75,7 @@ namespace Nugget.Server
         }
 
 
-        public void StartReceiving(DataFrame frame = null)
+        internal void StartReceiving(DataFrame frame = null)
         {
 
             if (frame == null)
