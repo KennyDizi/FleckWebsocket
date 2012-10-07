@@ -15,5 +15,17 @@ namespace Nugget.Server
             Fragments = fragments;
         }
 
+        public string GetFragmentPayloadAsString()
+        {
+            var sb = new StringBuilder();
+            foreach (var f in Fragments)
+            {
+                if (f.Masked)
+                    f.UnMaskPayload();
+                sb.Append(Encoding.UTF8.GetString(f.GetPayload()));
+            }
+            return sb.ToString();
+        }
+
     }
 }

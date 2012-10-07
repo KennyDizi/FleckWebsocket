@@ -6,7 +6,7 @@ using Nugget.Server;
 
 namespace Nugget.Samples.HelloWorld
 {
-    class Server
+    public class Server
     {
         static void Main(string[] args)
         {
@@ -14,8 +14,9 @@ namespace Nugget.Samples.HelloWorld
             var nugget = new WebSocketServer("ws://localhost:8181", "null");
 
             // subscribe to the OnConnect event
-            nugget.OnConnect += (wsc) =>
+            nugget.OnConnect += (sender, e) =>
             {
+                var wsc = (WebSocketConnection)e.Connection;
                 wsc.Send("Hello World");
                 Console.WriteLine("new connection from {0}", wsc.Socket.RemoteEndPoint);
             };
