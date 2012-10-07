@@ -15,6 +15,7 @@ namespace Nugget.Server
             Fragments = fragments;
         }
 
+        [Obsolete("GetFragmentPayloadAsString is not just here for convenience while I get the server working for the new protocol", false)]
         public string GetFragmentPayloadAsString()
         {
             var sb = new StringBuilder();
