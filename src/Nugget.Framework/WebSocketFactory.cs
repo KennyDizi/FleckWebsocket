@@ -20,7 +20,7 @@ namespace Nugget.Framework
         public WebSocketFactory(WebSocketServer server)
         {
             _server = server;
-            _server.OnConnect += new ConnectedEventHandler(HandleConnection);
+            _server.OnConnect += new EventHandler<WebSocketConnectedEventArgs>(HandleConnection);
         }
 
 
@@ -44,9 +44,10 @@ namespace Nugget.Framework
 
         #region handlers
 
-        private void HandleConnection(WebSocketConnection wsc)
+        private void HandleConnection(object sender, WebSocketConnectedEventArgs e)
         {
-            var path = wsc.Handshake.ResourcePath;
+            var wsc = e.Connection;
+            var path = wsc.Handshake.ResourceName.ToString(); // TODO test if this is rigth with the new server
             if (_types.ContainsKey(path))
             {
                 //var type = typeof(WebSocket).MakeGenericType(_types[path]);
@@ -56,21 +57,25 @@ namespace Nugget.Framework
 
                 userSocket.Connected(wsc.Handshake);
 
-                wsc.OnDisconnect += new DisconnectedEventHandler(HandleDisconnect);
-                wsc.OnReceive += new ReceiveEventHandler(HandleReceive);
+                wsc.OnDisconnect += new EventHandler<DisconnectedEventArgs>(HandleDisconnect);
+                wsc.OnReceive += new EventHandler<DataReceivedEventArgs>(HandleReceive);
             }
         }
 
-        void HandleReceive(WebSocketConnection wsc, string data)
+        void HandleReceive(object sender, DataReceivedEventArgs e)
         {
+            var wsc = (WebSocketConnection)sender;
+            var data = e.GetFragmentPayloadAsString(); // TODO: too many assumptions
+
             if (_userSockets.ContainsKey(wsc))
             {
                 _userSockets[wsc].Incoming(data);
             }
         }
 
-        void HandleDisconnect(WebSocketConnection wsc)
+        void HandleDisconnect(object sender, DisconnectedEventArgs e)
         {
+            var wsc = (WebSocketConnection)sender;
             if (_userSockets.ContainsKey(wsc))
             {
                 _userSockets[wsc].Disconnected();

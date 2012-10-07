@@ -32,7 +32,7 @@ namespace Nugget.Samples.HelloFramework
 
         public override void Incoming(string data)
         {
-            Send(data+data);
+            Send(data + data); // echo the received message twice
         }
 
         public override void Disconnected()
