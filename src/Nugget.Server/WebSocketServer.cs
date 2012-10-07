@@ -6,12 +6,6 @@ using System.Linq;
 
 namespace Nugget.Server
 {
-    /// <summary>
-    /// Called when a new client is connected
-    /// </summary>
-    /// <param name="wsc">the connectino representing the connection</param>
-    public delegate void ConnectedEventHandler(WebSocketConnection wsc);
-
     public class WebSocketServer : IDisposable
     {
         /// <summary>
@@ -25,12 +19,12 @@ namespace Nugget.Server
         /// <summary>
         /// A list of the currently connected clients
         /// </summary>
-        public List<WebSocketConnection> ConnectedClients { get; set; }
+        public ICollection<WebSocketConnection> ConnectedClients { get; private set; }
 
         /// <summary>
         /// Event that is fired when a new client connects
         /// </summary>
-        public event ConnectedEventHandler OnConnect;
+        public event EventHandler<WebSocketConnectedEventArgs> OnConnect;
 
         /// <summary>
         /// Instantiate a new web socket server
@@ -85,8 +79,7 @@ namespace Nugget.Server
             {
                 // instantiate the connection and subscribe to the events
                 var wsc = new WebSocketConnection(clientSocket, handshake);
-                wsc.OnDisconnect += new DisconnectedEventHandler(OnClientDisconnect);
-                wsc.OnReceive += new ReceiveEventHandler(OnClientData);
+                wsc.OnDisconnect += new EventHandler<DisconnectedEventArgs>(OnClientDisconnect);
                 
                 // add the new client to the list
                 ConnectedClients.Add(wsc);
@@ -94,7 +87,7 @@ namespace Nugget.Server
                 // fire the connected event
                 if (OnConnect != null)
                 {
-                    OnConnect(wsc);
+                    OnConnect(this, new WebSocketConnectedEventArgs(wsc));
                 }
 
                 // start looking for data
@@ -105,46 +98,49 @@ namespace Nugget.Server
             ListenForClients();
         }
 
-        private void OnClientDisconnect(WebSocketConnection wsc)
+        private void OnClientDisconnect(object wsc, EventArgs e)
         {
             Log.Info("client disconnected");
-            ConnectedClients.Remove(wsc);
-        }
-
-        private void OnClientData(WebSocketConnection wsc, string data)
-        {
-            Log.Info("incomming data: " + data);
-        }
-
-        public void Dispose()
-        {
-            ListenerSocket.Dispose();
+            ConnectedClients.Remove((WebSocketConnection)wsc);
         }
 
         /// <summary>
         /// Send a message to all the connected clients
         /// </summary>
-        /// <param name="msg">the message to send</param>
-        public void SendToAll(string msg)
+        /// <param name="message">the message to send</param>
+        public void SendToAll(string message)
         {
             foreach (var client in ConnectedClients)
             {
-                client.Send(msg);
+                client.Send(message);
             }
         }
 
         /// <summary>
         /// Send a message to all the connected clients, excluding one.
         /// </summary>
-        /// <param name="msg">the message to send</param>
+        /// <param name="message">the message to send</param>
         /// <param name="exclude">the connection to exclude</param>
-        public void SendToAll(string msg, WebSocketConnection exclude)
+        public void SendToAll(string message, WebSocketConnection exclude)
         {
             foreach (var client in ConnectedClients.Where(x => !x.Equals(exclude)))
             {
-                client.Send(msg);
+                client.Send(message);
             }
         }
+
+        #region dispose
+        protected virtual void Dispose(bool managed)
+        {
+            ListenerSocket.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 
 }

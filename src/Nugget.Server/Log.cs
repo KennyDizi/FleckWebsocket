@@ -7,46 +7,46 @@ using System.IO;
 namespace Nugget.Server
 {
     [Flags]
-    public enum LogLevel 
-    { 
+    public enum LogLevels
+    {
+        None,
         Error,
         Info,
         Debug,
-        Waring,
-        None,
+        Warning,
     }
 
-    public class Log
+    public static class Log
     {
         static TextWriter _logStream = Console.Out;
-        static TextWriter LogStream { get { return _logStream; } set { _logStream = value; } }
-        public static LogLevel Level = LogLevel.Error | LogLevel.Debug | LogLevel.Info | LogLevel.Waring;
+        static TextWriter LogStream { get { return _logStream; } }
+        public const LogLevels Level = LogLevels.Error | LogLevels.Debug | LogLevels.Info | LogLevels.Warning;
 
-        public static void Warn(string str)
+        public static void Warn(string message)
         {
-            LogLine(LogLevel.Waring, String.Format("{0} {1} {2}", DateTime.Now, "WARN", str));
+            LogLine(LogLevels.Warning, String.Format("{0} {1} {2}", DateTime.Now, LogLevels.Warning.ToString(), message));
         }
 
-        public static void Error(string str)
+        public static void Error(string message)
         {
-            LogLine(LogLevel.Error, String.Format("{0} {1} {2}", DateTime.Now, "ERROR", str));
+            LogLine(LogLevels.Error, String.Format("{0} {1} {2}", DateTime.Now, LogLevels.Error.ToString(), message));
         }
 
-        public static void Debug(string str)
+        public static void Debug(string message)
         {
-            LogLine(LogLevel.Debug, String.Format("{0} {1} {2}", DateTime.Now, "DEBUG", str));
+            LogLine(LogLevels.Debug, String.Format("{0} {1} {2}", DateTime.Now, LogLevels.Debug.ToString(), message));
         }
 
-        public static void Info(string str)
+        public static void Info(string message)
         {
-            LogLine(LogLevel.Info, String.Format("{0} {1} {2}", DateTime.Now, "INFO", str));
+            LogLine(LogLevels.Info, String.Format("{0} {1} {2}", DateTime.Now, LogLevels.Info.ToString(), message));
         }
 
-        private static void LogLine(LogLevel level, string msg)
+        private static void LogLine(LogLevels level, string message)
         {
             if ((Level & level) == level)
             {
-                LogStream.WriteLine(msg);
+                LogStream.WriteLine(message);
             }
         }
     }

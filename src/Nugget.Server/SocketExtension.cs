@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Diagnostics.Contracts;
 
 namespace Nugget.Server
 {
@@ -71,20 +72,31 @@ namespace Nugget.Server
 
         #region Send
 
-        public static void AsyncSend(this Socket socket, byte[] buffer, object state, Action<int, object> callback)
+        public static void AsyncSend(this Socket socket, byte[] buffer)
         {
-            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), new State() { Socket = socket, Callback = new Callback(callback), UserDefinedState = state});
+            BeginSend(socket, buffer, new State() { Socket = socket, Callback = null });
         }
 
         public static void AsyncSend(this Socket socket, byte[] buffer, Action<int> callback)
         {
-            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), new State() { Socket = socket, Callback = new Callback(callback) });
+            BeginSend(socket, buffer, new State() { Socket = socket, Callback = new Callback(callback) });
         }
 
-        public static void AsyncSend(this Socket socket, byte[] buffer)
+        public static void AsyncSend(this Socket socket, byte[] buffer, object state, Action<int, object> callback)
         {
-            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), new State() { Socket = socket, Callback = null });
+            BeginSend(socket, buffer, new State() { Socket = socket, Callback = new Callback(callback), UserDefinedState = state });
         }
+
+        private static void BeginSend(Socket socket, byte [] buffer, State state)
+        {
+            if (socket == null) throw new ArgumentNullException("socket");
+            if (buffer == null) throw new ArgumentNullException("buffer");
+
+            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), state);
+        }
+
+
+
 
         private static void SendCallback(IAsyncResult ar)
         {
@@ -112,23 +124,31 @@ namespace Nugget.Server
         #endregion
 
         #region Receive
-        
-        public static void AsyncReceive(this Socket socket, byte[] buffer, object state, Action<int, object> callback)
-        {
-            if (state == null)
-                throw new InvalidOperationException("State cannot be null");
 
-            socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(ReceiveCallback), new State() { Socket = socket, Callback = new Callback(callback), UserDefinedState = state });
+        public static void AsyncReceive(this Socket socket, byte[] buffer)
+        {
+            BeginReceive(socket, buffer, new State() { Socket = socket, Callback = null });
         }
 
         public static void AsyncReceive(this Socket socket, byte[] buffer, Action<int> callback)
         {
-            socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(ReceiveCallback), new State() { Socket = socket, Callback = new Callback(callback) });
+            BeginReceive(socket, buffer, new State() { Socket = socket, Callback = new Callback(callback) });
         }
 
-        public static void AsyncReceive(this Socket socket, byte[] buffer)
+        public static void AsyncReceive(this Socket socket, byte[] buffer, object state, Action<int, object> callback)
         {
-            socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(ReceiveCallback), new State() { Socket = socket, Callback = null });
+            if (state == null)
+                throw new ArgumentNullException("state");
+
+            BeginReceive(socket, buffer, new State() { Socket = socket, Callback = new Callback(callback), UserDefinedState = state });
+        }
+
+        private static void BeginReceive(Socket socket, byte[] buffer, State state)
+        {
+            if (socket == null) throw new ArgumentNullException("socket");
+            if (buffer == null) throw new ArgumentNullException("buffer");
+
+            socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(ReceiveCallback), state);
         }
 
         private static void ReceiveCallback(IAsyncResult ar)

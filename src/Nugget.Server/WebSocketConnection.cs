@@ -7,26 +7,12 @@ using System.Net.Sockets;
 namespace Nugget.Server
 {
     /// <summary>
-    /// Called when a client receives data
-    /// </summary>
-    /// <param name="wsc">the connection representing the client receiving the data</param>
-    /// <param name="data">the data received</param>
-    public delegate void ReceiveEventHandler(WebSocketConnection wsc, string data);
-    
-    /// <summary>
-    /// Called when the client disconnects
-    /// </summary>
-    /// <param name="wsc">the connection representing the client disconnecting</param>
-    public delegate void DisconnectedEventHandler(WebSocketConnection wsc);
-
-    /// <summary>
     /// Class representing a connection to a client
     /// </summary>
     public class WebSocketConnection
     {
-
-        public event ReceiveEventHandler OnReceive;
-        public event DisconnectedEventHandler OnDisconnect;
+        public event EventHandler<DataReceivedEventArgs> OnReceive;
+        public event EventHandler<DisconnectedEventArgs> OnDisconnect;
 
         /// <summary>
         /// The socket connected to the client
@@ -38,11 +24,6 @@ namespace Nugget.Server
         /// </summary>
         public ClientHandshake Handshake { get; private set; }
 
-        /// <summary>
-        /// The size of the buffer used when data is sent or received
-        /// </summary>
-        public const int BufferSize = 512;
-        
         /// <summary>
         /// Create a new web socket connection
         /// </summary>
@@ -62,55 +43,33 @@ namespace Nugget.Server
         {
             if (Socket.Connected)
             {
-                Socket.AsyncSend(DataFrame.Wrap(data), (byteCount) =>
+                var bytes = Encoding.UTF8.GetBytes(data);
+                var fragment = DataFragment.Create(bytes, DataFragment.FragmentHead.Fin, DataFragment.FragmentOpcode.Text, true);
+                Socket.AsyncSend(fragment.GetBytes(), (byteCount) =>
                 {
                     Log.Debug(byteCount + " bytes send to " + Socket.RemoteEndPoint);
                 });
             }
             else
             {
-                OnDisconnect(this);
+                OnDisconnect(this, null);
                 Socket.Close();
             }
         }
 
 
-        internal void StartReceiving(DataFrame frame = null)
+        internal void StartReceiving()
         {
-
-            if (frame == null)
-                frame = new DataFrame();
-
-            var buffer = new byte[BufferSize];
-
             if (Socket == null || !Socket.Connected)
                 return;
 
-            Socket.AsyncReceive(buffer, frame, (sizeOfReceivedData, df) =>
+            DataPackage.Read(Socket, (fragments) =>
             {
-                var dataframe = (DataFrame)df;
-
-                if (sizeOfReceivedData > 0)
+                if (OnReceive != null)
                 {
-                    dataframe.Append(buffer);
-
-                    if (dataframe.IsComplete)
-                    {
-                        var data = dataframe.ToString();
-
-                        OnReceive(this, data);
-
-                        StartReceiving(); // start looking again
-                    }
-                    else // end is not is this buffer
-                    {
-                        StartReceiving(dataframe); // continue to read
-                    }
+                    OnReceive(this, new DataReceivedEventArgs(fragments));
                 }
-                else // no data - the socket must be closed
-                {
-                    OnDisconnect(this);
-                }
+                StartReceiving();
             });
         }
 
